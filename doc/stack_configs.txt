@@ -1,0 +1,113 @@
+Stack Configurations
+====================
+
+
+Config File Structure
+---------------------
+The ``bang`` configuration file structure came about with the
+following goals in mind:
+
+    - Readability (by humans)
+    - Not another bespoke serialization format
+    - Conciseness
+
+- It's a giant YAML mapping
+    - YAML for readability - readability first
+    - Each top-level section name is a key in the giant YAML mapping structure
+    - There are some reserved top-level section/key names that have special
+      meaning in ``bang``.
+    - There is an implicit, broader grouping of the top-level
+      sections.
+
+        - The broader groups are:
+
+            - `General Stack Properties`_
+            - `Dynamic Stack Resources`_
+            - `Configuration Scopes`_
+
+        - It is up to the user to avoid name collisions between keys,
+          especially between reserved keys and custom configuration scope
+          keys.  In
+
+Top-Level Sections/Keys
+-----------------------
+General Stack Properties
+~~~~~~~~~~~~~~~~~~~~~~~~
+The attributes in this section apply to the entire stack.
+
+The following top-level section names are reserved:
+
+    - name_
+    - version_
+    - deployer_credentials_
+    - playbooks_
+
+``deployer_credentials``
+^^^^^^^^^^^^^^^^^^^^^^^^
+See :meth:`bang.providers.hpcloud.HPCloud.authenticate`
+
+Dynamic Stack Resources
+~~~~~~~~~~~~~~~~~~~~~~~
+These configuration stanzas describe *Infrastructure as a Service
+(IaaS)* and *Platform as a Service (PaaS)* resources that should be
+created for the stack.
+
+The following top-level section names, or keys, are reserved:
+
+    - queues_
+    - buckets_
+    - database_security_groups_
+    - databases_
+    - server_security_groups_
+    - server_common_attributes_
+    - servers_
+
+Every dynamic stack resource key maps to a *list of definitions* for
+that particular resource type.  Each definition in the list is a
+key-value map of attributes.  Most attributes are specific to the
+type of resource being deployed.  However, every resource definition
+must contain a ``provider`` key whose value is the name of a
+bang-supported IaaS or PaaS provider.
+
+``queues``
+^^^^^^^^^^
+E.g. SQS
+
+``buckets``
+^^^^^^^^^^^
+E.g. S3, OpenStack Swift
+
+``database_security_groups``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``databases``
+^^^^^^^^^^^^^
+E.g. RDS, OpenStack RedDwarf
+
+``server_security_groups``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``server_common_attributes``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This section does **not** relate directly to a IaaS or PaaS resource.
+Instead, its purpose is to minimize the repetition of common
+attributes in the members of the servers_ section.
+
+All attributes in this section apply to *all* servers defined in the
+servers_ section.
+
+Examples of attributes you might include in this section:
+
+    - Centralized logging/monitoring
+    - Common security settings/groupings
+
+``servers``
+^^^^^^^^^^^
+E.g. EC2, OpenStack Nova, VPS virtual machines.
+
+Configuration Scopes
+~~~~~~~~~~~~~~~~~~~~
+Any top-level section name that is not specified above as a reserved
+key in `General Stack Properties`_ or in `Dynamic Stack Resources`_,
+is parsed and categorized as a custom configuration scope.
+

@@ -1,0 +1,10 @@
+*.pyc
+activate-*
+.ropeproject/
+stacks/
+.idea/
+bang.egg-info/
+.venv-*
+doc/_build/
+.coverage
+cover/

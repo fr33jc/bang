@@ -1,0 +1,13 @@
+#!/bin/sh
+BASE_ARGS="--with-coverage --cover-html --cover-package=bang"
+case "$1" in
+    "-h" | "--help")
+        echo "Usage:  $(basename $0) [-a | --all] [extra_nosetests_args...]"
+        exit 0
+        ;;
+    "-a" | "--cover-all")
+        extra_args="--cover-inclusive"
+        shift
+        ;;
+esac
+nosetests $BASE_ARGS "$extra_args" "$@"

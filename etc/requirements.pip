@@ -1,0 +1,66 @@
+# requirements.pip
+# ================
+#
+# These are the 3rd-party dependencies.  This file is intended to be passed to
+# pip as a standard requirements file.
+#
+# To keep things as DRY as possible, this file also gets parsed by setup.py to
+# come up with the value for the ``install_requires`` argument to setup().
+#
+# This project uses setuptools (as opposed to plain ol' distutils) because it
+# provides an authentication plugin for python-novaclient, which in turn uses
+# setuptools' entry point mechanism to support extensions.  In order to
+# activate the plugin from a source code checkout that you intend to hack on,
+# you must run ``python setup.py develop``.
+#
+
+
+# logutils
+#     - Homepage:  http://code.google.com/p/logutils/
+#     - License:  BSD 3-Clause
+logutils==0.3.2
+
+# PyYAML
+#     - Homepage:  http://pyyaml.org/
+#     - License:  MIT
+PyYAML==3.10
+
+# Boto
+#     - Homepage:  http://code.google.com/p/boto/
+#     - License:  MIT
+boto>=2.6.0
+
+# PyMySQL
+#     - Homepage:  https://github.com/petehunt/PyMySQL/
+#     - License:  MIT
+PyMySQL==0.5
+
+# python-novaclient
+#     - Python bindings to OpenStack Nova's REST API
+#     - Homepage:  https://github.com/openstack/python-novaclient
+#     - License:  Apache v2.0
+python-novaclient==2.10.0
+
+# novaclient-auth-secretkey
+#     - Authentication plugin to use API key + secret key
+#     - Homepage:  https://github.com/fr33jc/novaclient-auth-secretkey
+#     - License:  MIT
+novaclient-auth-secretkey
+
+# python-swiftclient
+#     - Python bindings to OpenStack Swift's REST API
+#     - Homepage:  https://github.com/openstack/python-swiftclient
+#     - License:  Apache v2.0
+python-swiftclient==1.2.0
+
+# python-reddwarfclient
+#     - Python bindings to Openstack RedDwarf's (DBaaS) REST API
+#     - Homepage:  https://github.com/stackforge/python-reddwarfclient
+#     - License:  Apache v2.0
+python-reddwarfclient==2012.3
+
+# ansible
+#     - Model-driven configuration management, multi-node deployment, and remote task execution system.
+#     - Homepage:  http://ansible.cc/
+#     - License:  GPLv3
+ansible==0.9

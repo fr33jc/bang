@@ -1,0 +1,34 @@
+# Coverage
+#     - Code coverage measurement tool
+#     - License:  BSD
+coverage==3.5.2
+
+# nose
+#     - Convenience helpers around unittest (e.g. magic test discovery/test
+#       runner, etc...)
+#     - License:  LGPL
+nose==1.1.2
+
+# Sphinx
+#     - http://sphinx.pocoo.org/
+#     - Documentation generator
+#     - License:  BSD 2-clause
+Sphinx==1.1.3
+
+# IPython
+#     - Not really necessary to run the tools, but incredibly useful
+#       for interactive probing of the HP Play web services.
+#     - License:  BSD 3-Clause
+ipython
+
+# rst2pdf
+#     - Converts restructuredtext to PDF via reportlab
+#     - Homepage:  http://rst2pdf.ralsina.com.ar/
+#     - License:  MIT
+rst2pdf
+
+# mock
+#     - Mocking library
+#     - Homepage:  http://www.voidspace.org.uk/python/mock/
+#     - License:  BSD 3-clause
+mock

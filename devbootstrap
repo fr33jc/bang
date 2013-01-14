@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# devbootstrap
+# ============
+#
+# Copyright 2012 - John Calixto
+#
+# This file is part of bang.
+#
+# bang is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# bang is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with bang.  If not, see <http://www.gnu.org/licenses/>.
+#
+# -----------------------------------------------------------------
+#
+# Usage:  devbootstrap [environment_name]
+#
+# Creates a new virtualenv named environment_name, and installs all the
+# runtime and devtime dependencies.
+#
+# If environment_name is not specified, it defaults to "BANG".
+#
+
+VENV=virtualenv
+VENV_PY_URL=https://raw.github.com/pypa/virtualenv/master/virtualenv.py
+
+here=$(cd $(dirname $0); /bin/pwd)
+venv_name=${1-BANG}
+venv_dir=${VIRTUAL_ENV-$here/.venv-$venv_name}
+bin_dir=$venv_dir/bin
+activate=$bin_dir/activate
+pip="$bin_dir/pip install -r"
+
+die() {
+    echo "$*"
+    exit 1
+}
+
+if [ -f "$bin_dir/activate" ]
+then
+    venv_name=$(basename $venv_dir)
+else
+    venv_args="--no-site-packages --distribute --prompt=($venv_name) $venv_dir"
+
+    if which $VENV &>/dev/null
+    then
+        $VENV $venv_args || die "Could not create virtualenv"
+    else
+        curl -Os $VENV_PY_URL || die "Could not download virtualenv"
+        python virtualenv.py $venv_args || die "Could not create virtualenv"
+        rm virtualenv.py* distribute-*.tar.gz
+    fi
+fi
+
+$pip $here/etc/requirements.pip || die "Could not install main dependencies"
+$pip $here/etc/devreqs.pip || die "Could not install dev dependencies"
+$bin_dir/python setup.py develop || die "Could not setup bang in dev mode"
+
+local_link=activate-$venv_name
+ln -s $activate $here/$local_link
+
+echo
+echo ==================================================
+echo
+echo Dependencies installed to:  $venv_dir
+echo Activate the virtualenv by running:
+echo
+echo "    source $local_link"
+echo

@@ -1,0 +1,138 @@
+API
+===
+
+
+:mod:`bang`
+-----------
+
+.. automodule:: bang
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`bang.config`
+------------------
+
+.. automodule:: bang.config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.deployers`
+---------------------
+
+.. automodule:: bang.deployers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.deployers.cloud`
+---------------------------
+
+.. automodule:: bang.deployers.cloud
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.deployers.deployer`
+------------------------------
+
+.. automodule:: bang.deployers.deployer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.inventory`
+---------------------
+
+.. automodule:: bang.inventory
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.providers`
+---------------------
+
+.. automodule:: bang.providers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.providers.bases`
+---------------------------
+
+.. automodule:: bang.providers.bases
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.providers.hpcloud`
+-----------------------------
+
+.. automodule:: bang.providers.hpcloud
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.providers.hpcloud.nova_auth`
+---------------------------------------
+
+.. automodule:: bang.providers.hpcloud.nova_auth
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.providers.hpcloud.reddwarf`
+---------------------------------------
+
+.. automodule:: bang.providers.hpcloud.reddwarf
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.providers.openstack`
+-------------------------------
+
+.. automodule:: bang.providers.openstack
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.scm`
+---------------
+
+.. automodule:: bang.scm
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.stack`
+-----------------
+
+.. automodule:: bang.stack
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.util`
+----------------
+
+.. automodule:: bang.util
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+

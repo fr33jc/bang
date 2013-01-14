@@ -1,0 +1,47 @@
+Road Map
+========
+
+
+Some of the feature ideas below will be implemented in bang.  Some
+may be better suited for a *bang-utils* project.  They're listed here
+so they won't be forgotten along the way.
+
+
+General Features
+----------------
+- Add extension/plugin mechanism.  At the moment, the mercurial-style
+  (i.e. using an rc-file for registering extensions) is the most
+  palatable because it does *not* demand using setuptools, and
+  because it allows the user to manage files how they please.
+
+    - The corollary is that the setuptools-style (i.e. entry points
+      defined in setup.py) mechanism is *not* desirable.
+
+- Implement ``--dry-run``.
+- Validate stack configuration.
+
+    - Check for any build artifacts in the deployment S3 bucket/other
+      central storage location.
+
+- Integrate with revision control system.
+
+    - Autoincrement *stack version* in config file.
+    - Tag any config scope that defines a ``source_code`` attribute.
+    - Generate release notes between tags.
+
+- Autoscale servers.
+
+
+Providers
+---------
+- Add AWS provider.
+
+    - Add any deployers that don't really apply to less featureful
+      public cloud providers.  E.g. SQS, ELB, SNS, etc...
+
+- Rackspace
+- HP Cloud
+
+    - DB Security Groups
+
+- Bare-metal

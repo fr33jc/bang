@@ -1,0 +1,319 @@
+# Copyright 2012 - John Calixto
+#
+# This file is part of bang.
+#
+# bang is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# bang is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with bang.  If not, see <http://www.gnu.org/licenses/>.
+import os
+import os.path
+import tempfile
+import yaml
+
+from . import resources as R, attributes as A
+from .util import log, bump_version_tail, deep_merge_dicts
+
+
+DEFAULT_CONFIG_DIR = 'bang-stacks'
+
+RC_KEYS = ['deployer_credentials', 'config_dir']
+ALL_RESERVED_KEYS = RC_KEYS + R.DYNAMIC_RESOURCE_KEYS
+
+
+def find_component_tarball(bucket, comp_name, comp_config):
+    """
+    Returns True if the component tarball is found in the bucket.
+
+    Otherwise, returns False.
+    """
+    values = {
+            'name': comp_name,
+            'version': comp_config['version'],
+            'platform': comp_config['platform'],
+            }
+    template = comp_config.get('archive_template')
+    if template:
+        key_name = template % values
+    else:
+        key_name = '%(name)s/%(name)s-%(version)s.tar.gz' % values
+    if not bucket.get_key(key_name):
+        log.error('%s not found' % key_name)
+        return False
+    return True
+
+
+def parse_bangrc():
+    """
+    Parses ``$HOME/.bangrc`` for global settings and deployer credentials.  The
+    ``.bangrc`` file is expected to be a YAML file whose outermost structure is
+    a key-value map.
+
+    Note that even though ``.bangrc`` is just a YAML file in which a user could
+    store any top-level keys, it is not expected to be used as a holder of
+    default values for stack-specific configuration attributes - if present,
+    they will be ignored.
+
+    Returns {} if ``$HOME/.bangrc`` does not exist.
+
+    :rtype:  :class:`dict`
+
+    """
+    bangrc_path = os.path.join(os.environ['HOME'], '.bangrc')
+    try:
+        with open(bangrc_path) as f:
+            raw = yaml.load(f)
+        return dict((k, raw[k]) for k in raw if k in RC_KEYS)
+    except IOError:
+        pass
+    return {}
+
+
+def resolve_config_spec(config_spec, config_dir=''):
+    """
+    Resolves :attr:`config_spec` to a path to a config file.
+
+    :param str config_spec:  Valid config specs:
+
+        - The basename of a YAML config file *without* the ``.yml`` extension.
+          The full path to the config file is resolved by appending ``.yml`` to
+          the basename, then by searching for the result in the
+          :attr:`config_dir`.
+
+        - The path to a YAML config file.  The path may be absolute or may be
+          relative to the current working directory.  If :attr:`config_spec`
+          contains a ``/`` (forward slash), or if it ends in ``.yml``, it is
+          treated as a path.
+
+    :param str config_dir:  The directory in which to search for stack
+        configuration files.
+
+    :rtype:  :class:`str`
+
+    """
+    if '/' in config_spec or config_spec.endswith('.yml'):
+        return config_spec
+    return os.path.join(config_dir, '%s.yml' % config_spec)
+
+
+class Config(dict):
+    """
+    A dict-alike that provides a convenient constructor, stashes the path
+    to the config file as an instance attribute, and performs some validation
+    of the values.
+    """
+    def __init__(self, *args, **kwargs):
+        """
+
+        :param str path_to_yaml:  Path to a yaml file to use as the data source
+            for the returned instance.
+
+        """
+        super(Config, self).__init__(*args, **kwargs)
+        self.filepath = ''
+
+    @classmethod
+    def from_config_specs(cls, config_specs, prepare=True):
+        """
+        Alternate constructor that merges config attributes from
+        ``$HOME/.bangrc`` and :attr:`config_specs` into a single
+        :class:`Config` object.
+
+        The first (and potentially *only* spec) in :attr:`config_specs` should
+        be main configuration file for the stack to be deployed.  The returned
+        object's :attr:`filepath` will be set to the absolute path of the first
+        config file.
+
+        If multiple config specs are supplied, their values are merged together
+        in the order specified in :attr:`config_specs` - That is, later values
+        override earlier values.
+
+        :param config_specs:  List of config specs.
+        :type config_specs:  :class:`list` of :class:`str`
+
+        :param bool prepare:  Flag to control whether or not :meth:`prepare` is
+            called automatically before returning the object.
+
+        :rtype:  :class:`Config`
+
+        """
+        bangrc = parse_bangrc()
+        config_dir = bangrc.get('config_dir', DEFAULT_CONFIG_DIR)
+        config_paths = [
+                resolve_config_spec(cs, config_dir) for cs in config_specs
+                ]
+        config = cls()
+        config.update(bangrc)
+        if config_paths:
+            config.filepath = config_paths[0]
+        for c in config_paths:
+            with open(c) as f:
+                deep_merge_dicts(config, yaml.load(f))
+        if prepare:
+            config.prepare()
+        return config
+
+    def _prepare_dbs(self):
+        dbcreds = self.get(R.DATABASE_CREDS, {})
+        for db in self.get(R.DATABASES, []):
+            creds = dbcreds.get(db[A.database.NAME])
+            if not creds:
+                continue
+            db[A.database.ADMIN_USER] = creds[A.database.ADMIN_USER]
+            db[A.database.ADMIN_PASS] = creds[A.database.ADMIN_PASS]
+
+    def _prepare_secgroups(self):
+        stack = self[A.NAME]
+
+        sg_rule_sets = []
+        for sg in self.get(R.SERVER_SECURITY_GROUPS, []):
+            provider = sg[A.secgroup.PROVIDER]
+            region = sg[A.secgroup.REGION]
+            # dress up the stack secgroup names
+            dressy_name = '%s-%s' % (stack, sg[A.secgroup.NAME])
+            sg[A.secgroup.NAME] = dressy_name
+            rules = []
+            for rule in sg[A.secgroup.RULES]:
+                r = rule.copy()
+
+                # generate dressy source if necessary
+                if rule.get(A.secgroup.SOURCE_SELF):
+                    r[A.secgroup.SOURCE] = dressy_name
+
+                r[A.secgroup.TARGET] = dressy_name
+                rules.append(r)
+            sg_rule_sets.append(
+                    {
+                        A.secgroup.NAME: dressy_name,
+                        A.secgroup.PROVIDER: provider,
+                        A.secgroup.REGION: region,
+                        A.secgroup.RULES: rules,
+                        }
+                    )
+        self[R.SERVER_SECURITY_GROUP_RULES] = sg_rule_sets
+
+        # make sure server configs use the dressed-up secgroup names
+        for s in self.get(R.SERVERS, []):
+            groups = [
+                    '%s-%s' % (stack, gname)
+                    for gname in s.get(A.server.STACK_SECGROUPS, [])
+                    ]
+            groups.extend(s.get(A.server.EXTRA_SECGROUPS, []))
+            s[A.server.SECGROUPS] = groups
+
+    def _prepare_tags(self):
+        # add ``stack`` and ``role`` tags
+        for s in self.get(R.SERVERS, []):
+            tags = s.get(A.server.TAGS, {})
+            tags[A.tags.STACK] = self[A.NAME]
+            tags[A.tags.ROLE] = s[A.server.NAME]
+            s[A.server.TAGS] = tags
+
+    def _prepare_vars(self):
+        stack = {
+                A.NAME: self[A.NAME],
+                A.VERSION: self[A.VERSION],
+                }
+        for server in self.get(R.SERVERS, []):
+            svars = {A.STACK: stack}
+            for scope in server.get(A.server.SCOPES, []):
+                svars[scope] = self[scope]
+            server[A.server.VARS] = svars
+
+    def prepare(self):
+        """
+        Reorganizes the data such that the deployment logic can find it all
+        where it expects to be.
+
+        The raw configuration file is intended to be as human-friendly as
+        possible partly through the following mechanisms:
+
+            - In order to minimize repetition, any attributes that are common
+              to all server configurations can be specified in the
+              ``server_common_attributes`` stanza even though the stanza itself
+              does not map directly to a deployable resource.
+            - For reference locality, each security group stanza contains its
+              list of rules even though rules are actually created in a
+              separate stage from the groups themselves.
+
+        In order to make the :class:`Config` object more useful to the program
+        logic, this method performs the following transformations:
+
+            - Distributes the ``server_common_attributes`` among all the
+              members of the ``servers`` stanza.
+            - Extracts security group rules to a top-level key, and
+              interpolates all source and target values.
+
+        """
+        # TODO: take server_common_attributes and disperse it among the various
+        # server stanzas
+        self._prepare_secgroups()
+        self._prepare_tags()
+        self._prepare_dbs()
+        self._prepare_vars()
+
+    def validate(self):
+        """
+        Performs all validation checks on this config.
+
+        Raises :class:`ValueError` for invalid configs.
+
+        """
+        # TODO: validate providers in each of the resource stanzas
+
+    def autoinc(self):
+        """
+        Conditionally updates the stack version in the file associated with
+        this config.
+
+        This  handles both official releases (i.e. QA configs), and release
+        candidates.  Assumptions about version:
+
+            - Official release versions are MAJOR.minor, where MAJOR and minor
+              are both non-negative integers.  E.g.
+
+                2.9
+                2.10
+                2.11
+                3.0
+                3.1
+                3.2
+                etc...
+
+            - Release candidate versions are MAJOR.minor-rc.N, where MAJOR,
+              minor, and N are all non-negative integers.
+
+                3.5-rc.1
+                3.5-rc.2
+
+        """
+        if not self.get('autoinc_version'):
+            return
+
+        oldver = self['version']
+        newver = bump_version_tail(oldver)
+
+        config_path = self.filepath
+        temp_fd, temp_name = tempfile.mkstemp(
+                dir=os.path.dirname(config_path),
+                )
+        with open(config_path) as old, os.fdopen(temp_fd, 'w') as new:
+            for oldline in old:
+                if oldline.startswith('version:'):
+                    new.write("version: '%s'\n" % newver)
+                    continue
+                new.write(oldline)
+
+        # no need to backup the old file, it's under version control anyway -
+        # right???
+        log.info('Incrementing stack version %s -> %s' % (oldver, newver))
+        os.rename(temp_name, config_path)
+        # TODO: commit_bang_config()
