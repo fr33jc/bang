@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
+from bang import VERSION
 import os.path
 
 
@@ -11,7 +12,7 @@ reqs.append('distribute')
 
 setup(
         name='bang',
-        version='0.1',
+        version=VERSION,
         author='fr33jc',
         author_email='fr33jc@gmail.com',
         packages=find_packages(exclude=['tests']),
