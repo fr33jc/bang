@@ -1,0 +1,40 @@
+Invoking ``bang``
+=================
+
+
+Quick Start
+-----------
+With all of your deployer credentials (e.g. AWS API keys) and stack
+configuration in the same file, ``mywebapp.yml``, you simply run::
+
+    bang mywebapp.yml
+
+As a convenience for successive invocations, you can set the
+`BANG_CONFIGS`_ environment variable:
+
+.. code-block:: bash
+
+    export BANG_CONFIGS=mywebapp.yml
+
+    # Deploy!
+    bang
+
+    # ... Hack on mywebapp.yml
+
+    # Deploy again!
+    bang
+
+    # ... Uh-oh, connection issues on one of the hosts.  Could be
+    # transient interweb goblins - deploy again!
+    bang
+
+    # Yay!
+
+
+``BANG_CONFIGS``
+----------------
+Set this to a colon-separated list of configuration specs.
+
+Other Options
+-------------
+.. program-output:: bang -h

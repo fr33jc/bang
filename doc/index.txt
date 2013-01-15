@@ -4,6 +4,7 @@ Welcome to bang's documentation!
 .. toctree::
     :maxdepth: 2
 
+    invoking
     stack_configs
     roadmap
     api
