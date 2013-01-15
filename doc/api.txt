@@ -82,15 +82,6 @@ API
     :show-inheritance:
 
 
-:mod:`bang.providers.hpcloud.nova_auth`
----------------------------------------
-
-.. automodule:: bang.providers.hpcloud.nova_auth
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 :mod:`bang.providers.hpcloud.reddwarf`
 ---------------------------------------
 
@@ -104,15 +95,6 @@ API
 -------------------------------
 
 .. automodule:: bang.providers.openstack
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-:mod:`bang.scm`
----------------
-
-.. automodule:: bang.scm
     :members:
     :undoc-members:
     :show-inheritance:
