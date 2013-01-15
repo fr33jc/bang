@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 import os.path
 
 
@@ -14,7 +14,7 @@ setup(
         version='0.1',
         author='fr33jc',
         author_email='fr33jc@gmail.com',
-        packages=['bang', 'bang.deployers'],
+        packages=find_packages(exclude=['tests']),
         license='GPLv3',
         description='Server and cloud resource deployment automation',
         platforms='POSIX',
