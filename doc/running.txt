@@ -1,5 +1,5 @@
-Invoking ``bang``
-=================
+Running Bang
+============
 
 
 Quick Start
