@@ -1,0 +1,47 @@
+Installing Bang
+===============
+
+
+Overview
+--------
+Bang is published in `PyPI <http://pypi.python.org/pypi>`_ and can be
+installed via pip::
+
+    pip install bang
+
+However, Bang depends on other libraries for such things as cloud
+provider integration and configuration management.  The OpenStack
+client libraries in particular have extra dependencies that can be
+tricky to install (e.g. `python-reddwarfclient
+<https://github.com/stackforge/python-reddwarfclient>`_ depends on
+`lxml <http://lxml.de/>`_).
+
+
+Installing Dependencies
+-----------------------
+Debian/Ubuntu
+~~~~~~~~~~~~~
+... Using System Packages
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. WARNING::  This will likely upgrade some of your system Python
+   packages.  E.g. On a stock Ubuntu 12.04 LTS installation, it
+   upgrades `boto <https://github.com/boto/boto/>`_.
+
+The benefit of installing Bang into your system Python installation
+is that you don't need to build the native extensions in Bang's
+dependencies - you can just use the prebuilt packages for your
+system.  The following commands will install Bang to your system
+Python installation::
+
+    sudo apt-get install python-pip python-lxml
+    sudo pip install bang
+
+... In a Virtualenv
+^^^^^^^^^^^^^^^^^^^
+Unfortunately, some of Bang's dependencies have native extensions
+that require extra headers and compilation tools.  Install the
+build-time dependencies from the Debian/Ubuntu package repos::
+
+    sudo apt-get install build-essential python-dev libxml2-dev libxslt-dev
+
+Then install Bang as directed above.
