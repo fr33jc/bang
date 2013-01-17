@@ -1,11 +1,21 @@
-Welcome to bang's documentation!
-================================
+Bang!
+=====
 
+
+User Guide
+----------
 .. toctree::
     :maxdepth: 2
 
     running
     stack_configs
+
+
+Hacking
+-------
+.. toctree::
+    :maxdepth: 2
+
     roadmap
     api
 
