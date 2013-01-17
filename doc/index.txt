@@ -1,5 +1,4 @@
-Bang!
-=====
+.. include::  ../README.rst
 
 
 User Guide
