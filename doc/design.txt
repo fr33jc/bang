@@ -1,7 +1,9 @@
+Design
+======
+
+
 Configuration File Rationale
-============================
-
-
+----------------------------
 The Bang configuration file structure came about with the following
 goals in mind:
 

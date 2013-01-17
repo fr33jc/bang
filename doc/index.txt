@@ -17,7 +17,7 @@ Hacking
     :maxdepth: 2
 
     roadmap
-    config_rationale
+    design
     api
 
 
