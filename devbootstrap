@@ -45,9 +45,10 @@ die() {
     exit 1
 }
 
-if [ -f "$bin_dir/activate" ]
+if [ -f "$activate" ]
 then
     venv_name=$(basename $venv_dir)
+    venv_name=${venv_name#.venv-}
 else
     venv_args="--no-site-packages --distribute --prompt=($venv_name) $venv_dir"
 
@@ -66,7 +67,7 @@ $pip $here/etc/devreqs.pip || die "Could not install dev dependencies"
 $bin_dir/python setup.py develop || die "Could not setup bang in dev mode"
 
 local_link=activate-$venv_name
-ln -s $activate $here/$local_link
+ln -nsf $activate $here/$local_link
 
 echo
 echo ==================================================
