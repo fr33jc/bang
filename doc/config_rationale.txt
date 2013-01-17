@@ -1,0 +1,21 @@
+Configuration File Rationale
+============================
+
+
+The Bang configuration file structure came about with the following
+goals in mind:
+
+    - Readability (by humans)
+    - Not another bespoke serialization format
+    - Conciseness
+
+While JSON would allowed for there to be one less package dependency,
+YAML was chosen as the overall serialization format because of its
+focus on human readability.
+
+In its earliest forms, Bang had its own SSH logic and used `Chef
+<http://www.opscode.com/chef/>`_ for configuration management.  When
+Ansible was identified as being a suitable replacement for the
+builtin SSH logic and for Chef, it made even more sense to continue
+using YAML for the file format because users could use the same
+format for configuring Bang and for authoring Ansible playbooks.
