@@ -1,5 +1,5 @@
-``bang``
-========
+Bang!
+=====
 
 
 *The beginning of the universe...*
