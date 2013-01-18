@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with bang.  If not, see <http://www.gnu.org/licenses/>.
+import collections
 import os
 import os.path
 import tempfile
@@ -225,7 +226,11 @@ class Config(dict):
         for server in self.get(R.SERVERS, []):
             svars = {A.STACK: stack}
             for scope in server.get(A.server.SCOPES, []):
-                svars[scope] = self[scope]
+                # allow scopes to be defined inline
+                if isinstance(scope, collections.Mapping):
+                    svars.update(scope)
+                else:
+                    svars[scope] = self[scope]
             server[A.server.VARS] = svars
 
     def prepare(self):
