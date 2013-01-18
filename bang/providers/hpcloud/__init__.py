@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with bang.  If not, see <http://www.gnu.org/licenses/>.
 import pymysql
+from novaclient.client import Client as NovaClient
 
 from ... import attributes as A, resources as R
 from ...util import log, poll_with_timeout
 from ..openstack import (OpenStack, Nova, RedDwarf,
         DEFAULT_STORAGE_SIZE_GB, DEFAULT_TIMEOUT_S, db_to_dict)
+from .nova_ext import DiabloVolumeManager
 from .reddwarf import HPDbaas
 
 
@@ -153,18 +155,19 @@ class HPCloud(OpenStack):
         cm[R.SERVERS] = HPNova
         cm[R.DATABASES] = HPRedDwarf
 
-    def get_os_client_args(self):
-        args = super(HPCloud, self).get_os_client_args()
+    def _get_nova_client(self):
+        args = self.get_os_client_args()
         if 'access_key_id' in self.creds and 'secret_access_key' in self.creds:
             # this pluggable auth requires api version 2
             args[0] = '2'
-        return args
 
-    def get_os_client_kwargs(self):
-        kwargs = super(HPCloud, self).get_os_client_kwargs()
+        kwargs = self.get_os_client_kwargs()
         if 'access_key_id' in self.creds and 'secret_access_key' in self.creds:
             kwargs['auth_system'] = 'secretkey'
-        return kwargs
+
+        nc = NovaClient(*args, **kwargs)
+        nc.volumes = DiabloVolumeManager(nc)
+        return nc
 
     def authenticate(self):
         """

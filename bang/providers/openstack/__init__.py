@@ -389,6 +389,11 @@ class OpenStack(Provider):
         """
         return self.os_client.client.service_catalog.catalog
 
+    def _get_nova_client(self):
+        args = self.get_os_client_args()
+        kwargs = self.get_os_client_kwargs()
+        return NovaClient(*args, **kwargs)
+
     @property
     def os_client(self):
         """
@@ -400,9 +405,7 @@ class OpenStack(Provider):
 
         """
         if not self._client:
-            args = self.get_os_client_args()
-            kwargs = self.get_os_client_kwargs()
-            self._client = NovaClient(*args, **kwargs)
+            self._client = self._get_nova_client()
         return self._client
 
     @property
