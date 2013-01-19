@@ -255,7 +255,6 @@ class Stack(object):
             pb.run()
 
             hosts = sorted(pb.stats.processed.keys())
-            playbook_cb.on_stats(pb.stats)
             failed = False
             for h in hosts:
                 hsum = pb.stats.summarize(h)
