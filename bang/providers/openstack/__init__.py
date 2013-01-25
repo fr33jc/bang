@@ -64,7 +64,7 @@ class Nova(Consul):
     """The consul for the OpenStack compute service."""
     def __init__(self, *args, **kwargs):
         super(Nova, self).__init__(*args, **kwargs)
-        self.nova = self.provider.os_client
+        self.nova = self.provider.nova_client
 
     def set_region(self, region_name):
         client = self.nova.client
@@ -347,7 +347,7 @@ def authenticated(f):
     """Decorator that authenticates to Keystone automatically."""
     @wraps(f)
     def new_f(self, *args, **kwargs):
-        if not self.os_client.client.auth_token:
+        if not self.nova_client.client.auth_token:
             self.authenticate()
         return f(self, *args, **kwargs)
     return new_f
@@ -377,7 +377,7 @@ class OpenStack(Provider):
     @authenticated
     def os_auth_token(self):
         """Authentication token returned from Keystone."""
-        return self.os_client.client.auth_token
+        return self.nova_client.client.auth_token
 
     @property
     @authenticated
@@ -387,15 +387,15 @@ class OpenStack(Provider):
 
         This is specific to OpenStack providers.
         """
-        return self.os_client.client.service_catalog.catalog
+        return self.nova_client.client.service_catalog.catalog
 
     def _get_nova_client(self):
-        args = self.get_os_client_args()
-        kwargs = self.get_os_client_kwargs()
+        args = self.get_nova_client_args()
+        kwargs = self.get_nova_client_kwargs()
         return NovaClient(*args, **kwargs)
 
     @property
-    def os_client(self):
+    def nova_client(self):
         """
         Each of the OpenStack client libraries (i.e. the ``python-*client``
         projects that live under https://github.com/openstack/) has its own way
@@ -411,7 +411,7 @@ class OpenStack(Provider):
     @property
     def swift_client(self):
         if not self._swift:
-            url = self.os_client.client.service_catalog.url_for(
+            url = self.nova_client.client.service_catalog.url_for(
                     service_type='object-store'
                     )
             sconn = SwiftConn(
@@ -428,7 +428,7 @@ class OpenStack(Provider):
     @property
     def reddwarf_client(self):
         if not self._reddwarf:
-            url = self.os_client.client.service_catalog.url_for(
+            url = self.nova_client.client.service_catalog.url_for(
                     service_type=self.REDDWARF_SERVICE_TYPE
                     )
             cli = self.REDDWARF_CLIENT_CLASS('usenova', 'usenova',
@@ -437,7 +437,7 @@ class OpenStack(Provider):
             self._reddwarf = cli
         return self._reddwarf
 
-    def get_os_client_args(self):
+    def get_nova_client_args(self):
         creds = self.creds
         # novaclient supports authentication plugins, so username + password
         # might not be the only set of credentials used to authenticate, so we
@@ -452,7 +452,7 @@ class OpenStack(Provider):
                     ]
         raise BangError("Need tenant_name to authenticate!")
 
-    def get_os_client_kwargs(self):
+    def get_nova_client_kwargs(self):
         creds = self.creds
         kwargs = dict((k, creds.get(k)) for k in ('auth_url', 'region_name'))
         # region_name is optional, but auth_url is required:
@@ -462,4 +462,4 @@ class OpenStack(Provider):
 
     def authenticate(self):
         log.info("Authenticating to OpenStack...")
-        self.os_client.authenticate()
+        self.nova_client.authenticate()

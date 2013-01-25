@@ -156,12 +156,12 @@ class HPCloud(OpenStack):
         cm[R.DATABASES] = HPRedDwarf
 
     def _get_nova_client(self):
-        args = self.get_os_client_args()
+        args = self.get_nova_client_args()
         if 'access_key_id' in self.creds and 'secret_access_key' in self.creds:
             # this pluggable auth requires api version 2
             args[0] = '2'
 
-        kwargs = self.get_os_client_kwargs()
+        kwargs = self.get_nova_client_kwargs()
         if 'access_key_id' in self.creds and 'secret_access_key' in self.creds:
             kwargs['auth_system'] = 'secretkey'
 
@@ -218,6 +218,6 @@ class HPCloud(OpenStack):
         secret_access_key = creds.get('secret_access_key', '')
         # prefer api key + secret key, but fallback to username + password
         if access_key_id and secret_access_key:
-            self.os_client.client.os_access_key_id = access_key_id
-            self.os_client.client.os_secret_key = secret_access_key
-        self.os_client.authenticate()
+            self.nova_client.client.os_access_key_id = access_key_id
+            self.nova_client.client.os_secret_key = secret_access_key
+        self.nova_client.authenticate()
