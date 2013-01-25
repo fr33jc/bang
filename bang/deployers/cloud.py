@@ -23,14 +23,19 @@ class BaseDeployer(Deployer):
     """Base class for all cloud resource deployers"""
     def __init__(self, stack, config, consul):
         super(BaseDeployer, self).__init__(stack, config)
-        self.consul = consul
+        self._consul = consul
+
+    @property
+    def consul(self):
+        return self._consul
 
 
 class RegionedDeployer(BaseDeployer):
     """Deployer that automatically sets its region"""
-    def __init__(self, *args, **kwargs):
-        super(RegionedDeployer, self).__init__(*args, **kwargs)
-        self.consul.set_region(self.region_name)
+    @property
+    def consul(self):
+        self._consul.set_region(self.region_name)
+        return self._consul
 
 
 class ServerDeployer(RegionedDeployer):
