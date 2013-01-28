@@ -26,7 +26,7 @@ SCOPES = 'config_scopes'
 VARS = 'hostvars'
 GROUPS = 'groups'
 
-# this are ansible magic vars
+# these are ansible magic vars
 INV_NAME = 'inventory_hostname'
 INV_NAME_SHORT = 'inventory_hostname_short'
 GROUP_NAMES = 'group_names'
