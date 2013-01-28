@@ -165,7 +165,14 @@ class Config(dict):
     def _prepare_dbs(self):
         dbcreds = self.get(R.DATABASE_CREDS, {})
         for db in self.get(R.DATABASES, []):
-            creds = dbcreds.get(db[A.database.NAME])
+            name = db[A.database.NAME]
+
+            # default db name is the deployer instance name
+            if A.database.DB_NAME not in db:
+                db[A.database.DB_NAME] = name
+
+            # make global db creds available to db deployer instance
+            creds = dbcreds.get(name)
             if not creds:
                 continue
             db[A.database.ADMIN_USER] = creds[A.database.ADMIN_USER]

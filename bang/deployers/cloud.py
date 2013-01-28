@@ -223,7 +223,7 @@ class DatabaseDeployer(BaseDeployer):
                 self.instance_type,
                 self.admin_username,
                 self.admin_password,
-                db_name=getattr(self, 'db_name', self.name),
+                db_name=self.db_name,
                 storage_size_gb=self.storage_size,
                 timeout_s=self.launch_timeout_s,
                 )
