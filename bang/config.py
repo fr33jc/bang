@@ -218,7 +218,7 @@ class Config(dict):
             tags[A.tags.ROLE] = s[A.server.NAME]
             s[A.server.TAGS] = tags
 
-    def _prepare_vars(self):
+    def _prepare_servers(self):
         """
         Prepare the variables that are exposed to the servers.
 
@@ -280,7 +280,7 @@ class Config(dict):
         self._prepare_secgroups()
         self._prepare_tags()
         self._prepare_dbs()
-        self._prepare_vars()
+        self._prepare_servers()
 
     def validate(self):
         """
