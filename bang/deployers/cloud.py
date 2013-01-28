@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with bang.  If not, see <http://www.gnu.org/licenses/>.
+import time
 from .. import attributes as A
 from ..util import log
 from .deployer import Deployer
@@ -85,6 +86,8 @@ class ServerDeployer(RegionedDeployer):
                 timeout_s=self.launch_timeout_s,
                 security_groups=self.security_groups,
                 )
+        log.debug('Post launch delay: %d s' % self.post_launch_delay_s)
+        time.sleep(self.post_launch_delay_s)
 
     def add_to_inventory(self):
         """Adds host to stack inventory"""
