@@ -27,6 +27,7 @@ VARS = 'hostvars'
 GROUPS = 'groups'
 REGION = 'region_name'
 AZ = 'availability_zone'
+LAUNCH_TIMEOUT = 'launch_timeout_s'
 
 # these are ansible magic vars
 INV_NAME = 'inventory_hostname'

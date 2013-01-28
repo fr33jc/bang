@@ -25,6 +25,7 @@ from .util import log, bump_version_tail, deep_merge_dicts
 
 
 DEFAULT_CONFIG_DIR = 'bang-stacks'
+DEFAULT_LAUNCH_TIMEOUT_S = 0
 
 RC_KEYS = ['deployer_credentials', 'config_dir']
 ALL_RESERVED_KEYS = RC_KEYS + R.DYNAMIC_RESOURCE_KEYS
@@ -170,6 +171,8 @@ class Config(dict):
             # default db name is the deployer instance name
             if A.database.DB_NAME not in db:
                 db[A.database.DB_NAME] = name
+            if A.database.LAUNCH_TIMEOUT not in db:
+                db[A.database.LAUNCH_TIMEOUT] = DEFAULT_LAUNCH_TIMEOUT_S
 
             # make global db creds available to db deployer instance
             creds = dbcreds.get(name)
@@ -243,7 +246,9 @@ class Config(dict):
                 A.VERSION: self[A.VERSION],
                 }
         for server in self.get(R.SERVERS, []):
-            # setup the server az/regions
+            # default values
+            if A.server.LAUNCH_TIMEOUT not in server:
+                server[A.server.LAUNCH_TIMEOUT] = DEFAULT_LAUNCH_TIMEOUT_S
             if A.server.AZ not in server:
                 server[A.server.AZ] = server[A.server.REGION]
 

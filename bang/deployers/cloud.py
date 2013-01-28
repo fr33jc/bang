@@ -82,7 +82,7 @@ class ServerDeployer(RegionedDeployer):
                 self.ssh_key_name,
                 tags=self.tags,
                 availability_zone=self.availability_zone,
-                timeout_s=getattr(self, 'launch_timeout_s', 0),
+                timeout_s=self.launch_timeout_s,
                 security_groups=self.security_groups,
                 )
 
