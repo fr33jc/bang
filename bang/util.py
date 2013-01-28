@@ -253,9 +253,13 @@ def poll_with_timeout(timeout_s, break_func, wake_every_s=60):
 
     """
     time_slept = 0
+    if wake_every_s > 60:
+        msg = '... sleeping for %0.2f minutes' % (wake_every_s / 60.0)
+    else:
+        msg = '... sleeping for %d seconds' % wake_every_s
     res = break_func()
     while res is None and time_slept < timeout_s:
-        log.debug('... sleeping for %0.2f minutes' % (wake_every_s / 60.0))
+        log.debug(msg)
         time.sleep(wake_every_s)
         time_slept += wake_every_s
         res = break_func()
