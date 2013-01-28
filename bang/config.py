@@ -219,11 +219,28 @@ class Config(dict):
             s[A.server.TAGS] = tags
 
     def _prepare_vars(self):
+        """
+        Prepare the variables that are exposed to the servers.
+
+        Most attributes in the server config are used directly.  However, due
+        to variations in how cloud providers treat regions and availability
+        zones, this method allows either the ``availability_zone`` or the
+        ``region_name`` to be used as the target availability zone for a
+        server.  If both are specified, then ``availability_zone`` is used.  If
+        ``availability_zone`` is not specified in the server config, then the
+        ``region_name`` value is used as the target availability zone.
+
+        """
         stack = {
                 A.NAME: self[A.NAME],
                 A.VERSION: self[A.VERSION],
                 }
         for server in self.get(R.SERVERS, []):
+            # setup the server az/regions
+            if A.server.AZ not in server:
+                server[A.server.AZ] = server[A.server.REGION]
+
+            # distribute the config scope attributes
             svars = {A.STACK: stack}
             for scope in server.get(A.server.SCOPES, []):
                 # allow scopes to be defined inline

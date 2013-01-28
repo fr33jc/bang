@@ -25,6 +25,8 @@ ID = 'id'
 SCOPES = 'config_scopes'
 VARS = 'hostvars'
 GROUPS = 'groups'
+REGION = 'region_name'
+AZ = 'availability_zone'
 
 # these are ansible magic vars
 INV_NAME = 'inventory_hostname'

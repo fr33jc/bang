@@ -81,7 +81,7 @@ class ServerDeployer(RegionedDeployer):
                 self.instance_type,
                 self.ssh_key_name,
                 tags=self.tags,
-                region_name=self.region_name,
+                availability_zone=self.availability_zone,
                 timeout_s=getattr(self, 'launch_timeout_s', 0),
                 security_groups=self.security_groups,
                 )

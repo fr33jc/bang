@@ -105,7 +105,7 @@ class Nova(Consul):
         return servers
 
     def create_server(self, basename, disk_image_id, instance_type,
-            ssh_key_name, tags=None, region_name=None,
+            ssh_key_name, tags=None, availability_zone=None,
             timeout_s=DEFAULT_TIMEOUT_S, **kwargs):
         """
         Creates a new server instance.  This call blocks until the server is
@@ -129,8 +129,8 @@ class Nova(Consul):
             *tags* for the server instance.
         :type tags:  :class:`Mapping`
 
-        :param str region_name:  The name of the region (sometimes known as
-            *availability zone*) in which to place the server.
+        :param str availability_zone:  The name of the availability zone in
+            which to place the server.
 
         :param float timeout_s:  The number of seconds to poll for an active
             server before failing.  Defaults to ``0`` (i.e. Expect server to be
@@ -149,7 +149,7 @@ class Nova(Consul):
                 flavor,
                 key_name=ssh_key_name,
                 meta=tags,
-                availability_zone=region_name,
+                availability_zone=availability_zone,
                 **kwargs
                 )
 
