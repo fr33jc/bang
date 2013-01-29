@@ -11,12 +11,20 @@ User Guide
     stack_configs
 
 
+Releases
+--------
+.. toctree::
+    :maxdepth: 2
+
+    releases
+    roadmap
+
+
 Hacking
 -------
 .. toctree::
     :maxdepth: 2
 
-    roadmap
     design
     api
 

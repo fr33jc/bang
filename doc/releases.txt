@@ -1,0 +1,24 @@
+Release Summary
+===============
+
+
+0.2 - TBD
+---------
+- AWS provider
+
+    - Compute (EC2)
+
+
+0.1 - January 15, 2013
+----------------------
+- Core Ansible playbook runner
+- Parallel cloud resource deployment
+- Generic OpenStack provider
+- HP Cloud provider
+
+    - Compute (Nova)
+
+        - Including security groups
+
+    - Object Storage (Swift)
+    - DBaaS (RedDwarf)
