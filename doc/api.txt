@@ -73,10 +73,28 @@ API
     :show-inheritance:
 
 
+:mod:`bang.providers.aws`
+-------------------------
+
+.. automodule:: bang.providers.aws
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`bang.providers.hpcloud`
 -----------------------------
 
 .. automodule:: bang.providers.hpcloud
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.providers.hpcloud.nova_ext`
+--------------------------------------
+
+.. automodule:: bang.providers.hpcloud.nova_ext
     :members:
     :undoc-members:
     :show-inheritance:
