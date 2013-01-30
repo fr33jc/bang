@@ -23,6 +23,7 @@ General Features
     - Check for any build artifacts in the deployment S3 bucket/other
       central storage location.
 
+- Create ssh keypairs if specified by the user in their ~/.bangrc.
 - Add playbook parallelization.  Allow running multiple playbooks at
   once.  Leave it up to the deployers to sort out inter-playbook
   dependencies.
