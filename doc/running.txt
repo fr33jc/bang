@@ -37,4 +37,4 @@ Set this to a colon-separated list of configuration specs.
 
 Other Options
 -------------
-.. program-output:: bang -h
+.. program-output:: ../bin/bang -h
