@@ -22,3 +22,5 @@ project *stacks*.
 Bang instantiates cloud resources (e.g. AWS EC2/OpenStack Nova server
 instances), then leverages `Ansible <http://ansible.cc/>`_ for server
 configuration.
+
+The online documentation lives at http://bang.readthedocs.org.
