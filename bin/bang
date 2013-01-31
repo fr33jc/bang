@@ -46,8 +46,6 @@ except ImportError:
 
 import os
 from textwrap import dedent
-from bang.stack import Stack
-from bang.config import Config
 from bang.util import parse_args, initialize_logging
 
 
@@ -57,9 +55,7 @@ def get_env_configs():
         return []
     return raw_env_cfgs.split(os.pathsep)
 
-
-def main():
-    args = parse_args({
+ARG_CONFIG = {
         'description': __doc__,
         'arguments': [
             ('config_specs', {
@@ -105,7 +101,9 @@ def main():
                         E.g.
 
                             # specify the configs to use
-                            export BANG_CONFIGS=/path/to/mystack.yml:/path/to/secrets.yml
+                            MYSTACK=/path/to/mystack.yml
+                            SECRETS=/path/to/secrets.yml
+                            export BANG_CONFIGS="$MYSTACK:$SECRETS"
 
                             # dump the inventory to stdout
                             bang --list
@@ -137,22 +135,25 @@ def main():
                         deployment and server configuration.
                         """),
                 }),
-            # TODO: implement validate/dry-run
-            # ('--check', '-c', {
-            #     'action': 'store_true',
-            #     'help': 'Run sanity check on environment after deploying',
-            #     }),
-            # TODO: implement tag_stack
             ('--version', '-v', {
                 'action': 'version',
                 'version': '%%(prog)s %s' % bang.VERSION,
                 }),
             ],
-        })
+        }
+
+
+def main():
+    args = parse_args(ARG_CONFIG)
 
     source = args.config_specs or get_env_configs()
     if not source:
         return
+
+    # these imports are here because we want to allow ``-h`` to succeed even in
+    # environments where these imports might fail (e.g. readthedocs.org builds)
+    from bang.stack import Stack
+    from bang.config import Config
 
     config = Config.from_config_specs(source)
 
