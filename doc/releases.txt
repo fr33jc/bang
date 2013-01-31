@@ -2,11 +2,15 @@ Release Summary
 ===============
 
 
-0.2 - TBD
----------
+0.2 - January 30, 3013
+----------------------
 - AWS provider
 
     - Compute (EC2)
+
+- Inline configuration scopes for server definitions
+- Separate regions from availability zones
+- Fix multi-region stacks
 
 
 0.1 - January 15, 2013
