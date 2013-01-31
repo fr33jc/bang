@@ -10,6 +10,7 @@ User Guide
     running
     stack_configs
     playbooks
+    help
 
 
 Releases

@@ -1,0 +1,19 @@
+Getting Help
+============
+
+
+Bang
+----
+Search through the `mailing list archives
+<http://sourceforge.net/mailarchive/forum.php?forum_name=bangproject-general>`_
+or `subscribe
+<mailto:bangproject-general@lists.sourceforge.net?subject=subscribe>`_ to
+bangproject-general@lists.sourceforge.net and post a question/comment.
+
+
+Ansible
+-------
+For questions related to ``ansible``, ``ansible-playbook``, playbooks, and
+modules, see the `Ansible project <http://ansible.cc>`_ for `documentation
+<http://ansible.cc/docs>`_ and several other support `resources
+<http://ansible.cc/resources.html>`_.
