@@ -9,6 +9,7 @@ User Guide
     installing
     running
     stack_configs
+    playbooks
 
 
 Releases

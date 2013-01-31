@@ -1,0 +1,31 @@
+Writing Ansible Playbooks
+=========================
+
+
+Bang was written with the goal of being able to use Ansible playbooks
+either with Bang's builtin playbook runner or directly with
+``ansible-playbook``.  As such, any working Ansible playbook will
+work when referenced in a Bang config.
+
+Refer to `Ansible's playbook documentation
+<http://ansible.cc/docs/playbooks.html>`_ for details about writing
+the actual playbooks.
+
+
+Search Path
+-----------
+Bang looks for any playbooks referenced by a stack configuration file
+in a ``playbooks/`` directory that is a peer of the stack
+configuration file.  After it has found a playbook, it defers to
+Ansible's path resolution logic for all other includes and file
+references.
+
+When Ansible searches for modules referenced in a playbook, it allows
+for playbook-specific modules to live in a ``library/`` directory
+that is a *peer of the playbook YAML file*.  To supplement this
+custom module location, Bang sets the Ansible module/library path to
+a ``common_modules/`` directory that is a *peer of the stack
+configuration file*.  This means that any custom modules that are
+used in multiple playbooks (i.e. not just for one specific playbook)
+can be stored along with your stack configurations, playbooks,
+templates, etc... in the same directory structure.
