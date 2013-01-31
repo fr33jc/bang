@@ -24,6 +24,8 @@ General Features
       central storage location.
 
 - Create ssh keypairs if specified by the user in their ~/.bangrc.
+- Allow absolute paths to playbooks, or a customizable playbook
+  search path.
 - Add playbook parallelization.  Allow running multiple playbooks at
   once.  Leave it up to the deployers to sort out inter-playbook
   dependencies.
