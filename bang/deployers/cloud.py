@@ -91,6 +91,8 @@ class ServerDeployer(RegionedDeployer):
 
     def add_to_inventory(self):
         """Adds host to stack inventory"""
+        if not self.server_attrs:
+            return
         for addy in self.server_attrs[A.server.PUBLIC_IPS]:
             self.stack.add_host(addy, self.groups, self.hostvars)
 
