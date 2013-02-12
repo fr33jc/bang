@@ -2,6 +2,13 @@ Release Summary
 ===============
 
 
+0.3 - February 11, 2013
+-----------------------
+- Update ansible dependency to 1.0
+- Fix bug that caused a crash when running ``bang --list`` with a
+  server definition in the stack config for which there was no
+  matching running instance.
+
 0.2 - January 30, 3013
 ----------------------
 - AWS provider
