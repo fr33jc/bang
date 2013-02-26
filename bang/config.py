@@ -27,7 +27,7 @@ from .util import log, bump_version_tail, deep_merge_dicts
 DEFAULT_CONFIG_DIR = 'bang-stacks'
 DEFAULT_LAUNCH_TIMEOUT_S = 0
 
-RC_KEYS = ['deployer_credentials', 'config_dir']
+RC_KEYS = [A.DEPLOYER_CREDS, 'config_dir']
 ALL_RESERVED_KEYS = RC_KEYS + R.DYNAMIC_RESOURCE_KEYS
 
 
@@ -228,6 +228,29 @@ class Config(dict):
             tags[A.tags.ROLE] = s[A.server.NAME]
             s[A.server.TAGS] = tags
 
+    def _prepare_ssh_keys(self):
+        keys = self.get(A.DEPLOYER_CREDS, {}).get(R.SSH_KEYS, {})
+        if not keys:
+            return
+        keys_to_install = []
+        for server in self.get(R.SERVERS, []):
+            key_name = server.get(A.server.SSH_KEY)
+            if not key_name:
+                continue
+            key = keys.get(key_name)
+            if not key:
+                continue
+            keys_to_install.append(
+                    {
+                        A.ssh_key.NAME: key_name,
+                        A.ssh_key.KEY: key,
+                        A.ssh_key.PROVIDER: server[A.server.PROVIDER],
+                        A.ssh_key.REGION: server[A.server.REGION],
+                        }
+                    )
+        if keys_to_install:
+            self[R.SSH_KEYS] = keys_to_install
+
     def _prepare_servers(self):
         """
         Prepare the variables that are exposed to the servers.
@@ -291,6 +314,7 @@ class Config(dict):
         """
         # TODO: take server_common_attributes and disperse it among the various
         # server stanzas
+        self._prepare_ssh_keys()
         self._prepare_secgroups()
         self._prepare_tags()
         self._prepare_dbs()

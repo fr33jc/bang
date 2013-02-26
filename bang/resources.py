@@ -24,6 +24,7 @@ SERVER_SECURITY_GROUPS = 'server_security_groups'
 SERVER_SECURITY_GROUP_RULES = 'server_security_group_rules'
 SERVER_COMMON_ATTRIBUTES = 'server_common_attributes'
 SERVERS = 'servers'
+SSH_KEYS = 'ssh_pub_keys'
 
 # This is where the inter-resource dependencies are resolved.  Keep it simple
 # until it needs to be more complicated.
@@ -45,6 +46,7 @@ STAGES = [
             SERVER_SECURITY_GROUPS,
             QUEUES,
             BUCKETS,
+            SSH_KEYS,
             ),
 
         (

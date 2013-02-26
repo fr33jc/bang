@@ -24,6 +24,7 @@ from ..util import log
 
 
 DEPLOYER_MAP = {
+        R.SSH_KEYS: cloud.SSHKeyDeployer,
         R.SERVERS: cloud.ServerDeployer,
         R.SERVER_SECURITY_GROUPS: cloud.SecurityGroupDeployer,
         R.SERVER_SECURITY_GROUP_RULES: cloud.SecurityGroupRulesetDeployer,

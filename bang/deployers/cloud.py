@@ -39,6 +39,30 @@ class RegionedDeployer(BaseDeployer):
         return self._consul
 
 
+class SSHKeyDeployer(RegionedDeployer):
+    """
+    Registers SSH keys with cloud providers so they can be used at
+    server-launch time.
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(SSHKeyDeployer, self).__init__(*args, **kwargs)
+        self.found = False
+        self.phases = [
+                (True, self.find_existing),
+                (lambda: not self.found, self.register),
+                ]
+
+    def find_existing(self):
+        """Searches for an existing SSH key matching the name."""
+        self.found = self.consul.find_ssh_pub_key(self.name)
+
+    def register(self):
+        """Registers SSH key with provider."""
+        log.info('Installing ssh key, %s' % self.name)
+        self.consul.create_ssh_pub_key(self.name, self.key)
+
+
 class ServerDeployer(RegionedDeployer):
 
     def __init__(self, *args, **kwargs):

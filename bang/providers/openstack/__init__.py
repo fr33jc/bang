@@ -75,6 +75,27 @@ class Nova(Consul):
                 )
         client.set_management_url(management_url.rstrip('/'))
 
+    def find_ssh_pub_key(self, name):
+        """
+        Returns ``True`` if an SSH key named :attr:`name` is found.
+
+        Otherwise returns ``False``.
+
+        :rtype:  :class:`bool`
+
+        """
+        return bool(self.nova.keypairs.findall(name=name))
+
+    def create_ssh_pub_key(self, name, key):
+        """
+        Installs the public SSH key under the name :attr:`name`.
+
+        Once installed, the key can be referenced when creating new server
+        instances.
+
+        """
+        self.nova.keypairs.create(name, key)
+
     def find_servers(self, tags, running=True):
         """
         Returns any servers in the region that have tags that match the
@@ -357,6 +378,7 @@ class OpenStack(Provider):
 
     CONSUL_MAP = {
             R.SERVERS: Nova,
+            R.SSH_KEYS: Nova,
             R.SERVER_SECURITY_GROUPS: Nova,
             R.SERVER_SECURITY_GROUP_RULES: Nova,
             R.BUCKETS: Swift,
