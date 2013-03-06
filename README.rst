@@ -26,3 +26,4 @@ configuration.
 The latest online documentation lives at http://fr33jc.github.com/bang/.
 
 .. image:: https://travis-ci.org/fr33jc/bang.png
+    :target: http://travis-ci.org/fr33jc/bang
