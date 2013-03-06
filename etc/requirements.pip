@@ -64,3 +64,12 @@ python-reddwarfclient==0.1.2
 #     - Homepage:  http://ansible.cc/
 #     - License:  GPLv3
 ansible==1.0
+
+
+# TODO: remove these once upstream gets their act together
+# The following packages are python-reddwarfclient dependencies, but upstream
+# messed up their packaging and the tarball in pypi does *not* refer to these:
+argparse>=1.2.1
+httplib2>=0.7.7
+lxml>=3.0.1
+prettytable>=0.6.1
