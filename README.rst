@@ -24,3 +24,5 @@ instances), then leverages `Ansible <http://ansible.cc/>`_ for server
 configuration.
 
 The latest online documentation lives at http://fr33jc.github.com/bang/.
+
+https://travis-ci.org/fr33jc/bang.png
