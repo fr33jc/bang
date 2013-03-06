@@ -39,7 +39,7 @@ PyMySQL==0.5
 #     - Python bindings to OpenStack Nova's REST API
 #     - Homepage:  https://github.com/openstack/python-novaclient
 #     - License:  Apache v2.0
-python-novaclient==2.10.0
+python-novaclient==2.11.1
 
 # novaclient-auth-secretkey
 #     - Authentication plugin to use API key + secret key
@@ -51,13 +51,13 @@ novaclient-auth-secretkey
 #     - Python bindings to OpenStack Swift's REST API
 #     - Homepage:  https://github.com/openstack/python-swiftclient
 #     - License:  Apache v2.0
-python-swiftclient==1.2.0
+python-swiftclient==1.3.0
 
 # python-reddwarfclient
 #     - Python bindings to Openstack RedDwarf's (DBaaS) REST API
 #     - Homepage:  https://github.com/stackforge/python-reddwarfclient
 #     - License:  Apache v2.0
-python-reddwarfclient==2012.3
+python-reddwarfclient==0.1.2
 
 # ansible
 #     - Model-driven configuration management, multi-node deployment, and remote task execution system.
