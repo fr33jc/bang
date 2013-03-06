@@ -23,7 +23,6 @@ General Features
     - Check for any build artifacts in the deployment S3 bucket/other
       central storage location.
 
-- Create ssh keypairs if specified by the user in their ~/.bangrc.
 - Allow absolute paths to playbooks, or a customizable playbook
   search path.
 - Add playbook parallelization.  Allow running multiple playbooks at
@@ -50,6 +49,8 @@ Providers
 
     - Add any deployers that don't really apply to less featureful
       public cloud providers.  E.g. SQS, ELB, SNS, etc...
+    - Create ssh keypairs if specified by the user in their
+      ~/.bangrc.
 
 - Rackspace
 - HP Cloud

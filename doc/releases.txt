@@ -2,6 +2,11 @@ Release Summary
 ===============
 
 
+0.4 - March 6, 2013
+-------------------
+- Update OpenStack client library dependencies
+- Add auto-registration of SSH keys for OpenStack
+
 0.3 - February 11, 2013
 -----------------------
 - Update ansible dependency to 1.0
