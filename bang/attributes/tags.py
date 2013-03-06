@@ -17,3 +17,4 @@
 NAME = 'name'
 ROLE = 'role'
 STACK = 'stack'
+TAGS = 'tags'

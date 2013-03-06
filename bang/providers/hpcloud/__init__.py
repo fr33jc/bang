@@ -61,6 +61,15 @@ class HPNova(Nova):
         non-standard return values.
 
         """
+        # hpcloud's management console stuffs all of its tags in a "tags" tag.
+        # populate it with the stack and role values here only at server
+        # creation time.  what users do with it after server creation is up to
+        # them.
+        tags = kwargs['tags']
+        tags[A.tags.TAGS] = ','.join([
+                tags.get(A.tags.STACK, ''),
+                tags.get(A.tags.ROLE, ''),
+                ])
         s = super(HPNova, self).create_server(*args, **kwargs)
         return fix_hp_addrs(s)
 
