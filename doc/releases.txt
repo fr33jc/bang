@@ -2,6 +2,10 @@ Release Summary
 ===============
 
 
+0.5 - March 11, 2013
+--------------------
+- Expose server ``name`` to playbooks as ``server_class``
+
 0.4 - March 6, 2013
 -------------------
 - Update OpenStack client library dependencies
