@@ -278,7 +278,10 @@ class Config(dict):
                 server[A.server.AZ] = server[A.server.REGION]
 
             # distribute the config scope attributes
-            svars = {A.STACK: stack}
+            svars = {
+                    A.STACK: stack,
+                    A.SERVER_CLASS: server[A.NAME],
+                    }
             for scope in server.get(A.server.SCOPES, []):
                 # allow scopes to be defined inline
                 if isinstance(scope, collections.Mapping):
