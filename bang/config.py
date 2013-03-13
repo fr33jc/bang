@@ -269,13 +269,14 @@ class Config(dict):
                 A.VERSION: self[A.VERSION],
                 }
         for server in self.get(R.SERVERS, []):
-            # default values
-            if A.server.LAUNCH_TIMEOUT not in server:
-                server[A.server.LAUNCH_TIMEOUT] = DEFAULT_LAUNCH_TIMEOUT_S
-            if A.server.POST_DELAY not in server:
-                server[A.server.POST_DELAY] = DEFAULT_LAUNCH_TIMEOUT_S
-            if A.server.AZ not in server:
-                server[A.server.AZ] = server[A.server.REGION]
+            # default cloud values
+            if A.PROVIDER in server:
+                if A.server.LAUNCH_TIMEOUT not in server:
+                    server[A.server.LAUNCH_TIMEOUT] = DEFAULT_LAUNCH_TIMEOUT_S
+                if A.server.POST_DELAY not in server:
+                    server[A.server.POST_DELAY] = DEFAULT_LAUNCH_TIMEOUT_S
+                if A.server.AZ not in server:
+                    server[A.server.AZ] = server[A.server.REGION]
 
             # distribute the config scope attributes
             svars = {
