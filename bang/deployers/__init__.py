@@ -17,20 +17,9 @@
 """
 Base classes and definitions for bang deployers (deployable components)
 """
-from . import cloud
-from .. import resources as R
-from ..providers import get_provider
+from . import cloud, default
+from .. import attributes as A
 from ..util import log
-
-
-DEPLOYER_MAP = {
-        R.SSH_KEYS: cloud.SSHKeyDeployer,
-        R.SERVERS: cloud.ServerDeployer,
-        R.SERVER_SECURITY_GROUPS: cloud.SecurityGroupDeployer,
-        R.SERVER_SECURITY_GROUP_RULES: cloud.SecurityGroupRulesetDeployer,
-        R.BUCKETS: cloud.BucketDeployer,
-        R.DATABASES: cloud.DatabaseDeployer,
-        }
 
 
 def get_stage_deployers(keys, stack):
@@ -58,14 +47,10 @@ def get_stage_deployers(keys, stack):
             continue
         log.debug("Found config for resource type, %s" % res_type)
         for res_config in res_configs:
-            pname = res_config['provider']
-            provider = get_provider(pname, creds[pname])
-            consul = provider.get_consul(res_type)
-            if not consul:
-                log.warn("%s does not provide %s" % (pname, res_type))
-                continue
-            deployer = DEPLOYER_MAP[res_type]
-            count = res_config.get('instance_count', 1)
-            ds = [deployer(stack, res_config, consul) for _ in range(count)]
-            deployers.extend(ds)
+            if A.PROVIDER in res_config:
+                ds = cloud.get_deployers(res_config, res_type, stack, creds)
+            else:
+                ds = [default.ServerDeployer(stack, res_config)]
+            if ds:
+                deployers.extend(ds)
     return deployers

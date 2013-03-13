@@ -37,6 +37,15 @@ API
     :show-inheritance:
 
 
+:mod:`bang.deployers.default`
+-----------------------------
+
+.. automodule:: bang.deployers.default
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`bang.deployers.deployer`
 ------------------------------
 

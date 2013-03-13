@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with bang.  If not, see <http://www.gnu.org/licenses/>.
 import time
-from .. import attributes as A
+from .. import resources as R, attributes as A
+from ..providers import get_provider
 from ..util import log
 from .deployer import Deployer
 
@@ -265,3 +266,25 @@ class DatabaseDeployer(BaseDeployer):
                 self.groups,
                 self.db_attrs
                 )
+
+
+DEPLOYER_MAP = {
+        R.SSH_KEYS: SSHKeyDeployer,
+        R.SERVERS: ServerDeployer,
+        R.SERVER_SECURITY_GROUPS: SecurityGroupDeployer,
+        R.SERVER_SECURITY_GROUP_RULES: SecurityGroupRulesetDeployer,
+        R.BUCKETS: BucketDeployer,
+        R.DATABASES: DatabaseDeployer,
+        }
+
+
+def get_deployers(res_config, res_type, stack, creds):
+    pname = res_config[A.PROVIDER]
+    provider = get_provider(pname, creds[pname])
+    consul = provider.get_consul(res_type)
+    if not consul:
+        log.warn("%s does not provide %s" % (pname, res_type))
+        return
+    deployer = DEPLOYER_MAP[res_type]
+    count = res_config.get('instance_count', 1)
+    return [deployer(stack, res_config, consul) for _ in range(count)]
