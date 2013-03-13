@@ -11,7 +11,7 @@ goals in mind:
     - Not another bespoke serialization format
     - Conciseness
 
-While JSON would allowed for there to be one less package dependency,
+While JSON would allow for there to be one less package dependency,
 YAML was chosen as the overall serialization format because of its
 focus on human readability.
 
