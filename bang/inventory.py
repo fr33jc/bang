@@ -29,6 +29,7 @@ def get_ansible_groups(group_map):
     # ansible.inventory.script.InventoryScript
     all_hosts = {}
     group_all = Group('all')
+    group_all.add_host(Host('127.0.0.1'))
     groups = [group_all]
     for gname, hosts in group_map.iteritems():
         g = Group(gname)
