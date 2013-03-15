@@ -56,5 +56,3 @@ Providers
 - HP Cloud
 
     - DB Security Groups
-
-- Bare-metal
