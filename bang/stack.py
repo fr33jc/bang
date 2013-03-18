@@ -246,6 +246,9 @@ class Stack(object):
                 callbacks=playbook_cb,
                 runner_callbacks=runner_cb,
                 stats=stats,
+
+                # this allows connection reuse using "ControlPersist":
+                transport='ssh',
             )
             pb.inventory = BangsibleInventory(
                     copy.deepcopy(self.groups_and_vars.lists),
