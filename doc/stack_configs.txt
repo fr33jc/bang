@@ -5,8 +5,8 @@ Stack Configurations
 Config File Structure
 ---------------------
 The configuration file is a `YAML <http://www.yaml.org>`_ document.
-Like an Ansible playbook, the outermost data structure is a `YAML
-mapping <http://www.yaml.org/spec/1.2/spec.html#id2798057>`_.
+Like a play in an Ansible playbook, the outermost data structure is a
+`YAML mapping <http://www.yaml.org/spec/1.2/spec.html#id2798057>`_.
 
 Like Python, blocks/sections/stanzas in a Bang config file are
 visually defined by indentation level.  Each top-level section name
@@ -17,7 +17,7 @@ in Bang and there is an implicit, broader grouping of these top-level
 keys/sections.  The broader groups are:
 
     - `General Stack Properties`_
-    - `Dynamic Stack Resources`_
+    - `Stack Resource Definitions`_
     - `Configuration Scopes`_
 
 Any string that is a valid YAML identifier and is **not** a reserved
@@ -54,68 +54,98 @@ playbooks
     A list of playbook filenames to execute.
 
 
-Dynamic Stack Resources
-~~~~~~~~~~~~~~~~~~~~~~~
-These configuration stanzas describe *Infrastructure as a Service
-(IaaS)* and *Platform as a Service (PaaS)* resources that should be
-created for the stack.
+Stack Resource Definitions
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+These configuration stanzas describe the building blocks for a
+project.  Examples of stack resources include:
 
-The following top-level section names, or keys, are reserved:
+    - Cloud resources
 
-    - queues_
-    - buckets_
-    - databases_
-    - server_security_groups_
-    - servers_
+        - Virtual servers
+        - Load balancers
+        - Firewalls and/or security groups
+        - Object storage
+        - Block storage
+        - Message queues
+        - Managed databases
 
-Every dynamic stack resource key maps to a *list of definitions* for
-that particular resource type.  Each definition in the list is a
-key-value map of attributes.  Most attributes are specific to the
-type of resource being deployed.  However, every resource definition
-must contain a ``provider`` key whose value is the name of a
-bang-supported IaaS or PaaS provider.
+    - Traditional server room/data center resources
 
-``queues``
-^^^^^^^^^^
-E.g. SQS
+        - Physical or virtual servers
+        - Load balancers
+        - Firewalls
 
-``buckets``
-^^^^^^^^^^^
-E.g. S3, OpenStack Swift
+Users can use Bang to manage stacks that span across traditional and
+cloud boundaries.  For example, a single stack might comprise:
 
-``databases``
-^^^^^^^^^^^^^
-E.g. RDS, OpenStack RedDwarf
+    - Legacy database servers in a datacenter
+    - Web application servers in an OpenStack public cloud
+    - Message queues and object storage from AWS (i.e. SQS)
 
-``server_security_groups``
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-E.g. EC2 and OpenStack Nova security groups
+Every stack resource key maps to a *list of definitions* for that
+particular resource type.  Each definition in the list is a key-value
+map of attributes.  Most attributes are specific to the type of
+resource being deployed.
 
-..
-    ``server_common_attributes``
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This section does **not** relate directly to a IaaS or PaaS resource.
-    Instead, its purpose is to minimize the repetition of common
-    attributes in the members of the servers_ section.
+Every cloud resource definition must contain a ``provider`` key whose
+value is the name of a Bang-supported cloud provider.
 
-    All attributes in this section apply to *all* servers defined in the
-    servers_ section.
+Server definitions that do not contain a ``provider`` key are assumed
+to be *already provisioned*.  Instead of a set of cloud server
+attributes, these definitions merely contain ``hostname`` values and
+the appropriate configuration scopes.
 
-    Examples of attributes you might include in this section:
+The reserved stack resource keys are described below:
 
-        - Centralized logging/monitoring
-        - Common security settings/groupings
+queues
+    E.g. SQS
 
-``servers``
-^^^^^^^^^^^
-E.g. EC2, OpenStack Nova, VPS virtual machines.
+buckets
+    E.g. S3, OpenStack Swift
+
+databases
+    E.g. RDS, OpenStack RedDwarf
+
+server_security_groups
+    E.g. EC2 and OpenStack Nova security groups
+
+servers
+    E.g. EC2, OpenStack Nova, VPS virtual machines.
+
 
 Configuration Scopes
 ~~~~~~~~~~~~~~~~~~~~
 Any top-level section name that is not specified above as a reserved
-key in `General Stack Properties`_ or in `Dynamic Stack Resources`_,
-is parsed and categorized as a custom configuration scope.
+key in `General Stack Properties`_ or in `Stack Resources
+Definitions`_, is parsed and categorized as a custom configuration
+scope.
 
 Any configuration scope names that are added to a server's
 ``config_scopes`` list, make those values available to Ansible
 playbooks as vars.
+
+Configuration scopes typically define attributes for applications and
+middleware in the stack.  For example, a media transcoding web
+service might have the following config scopes:
+
+.. code-block:: yaml
+
+    apache:
+      preforks: 4
+      modules:
+      - rewrite
+      - wsgi
+
+    my_web_frontend:
+      version: '1.2.0'
+      log_level: WARN
+
+    my_transcoder_app:
+      version: '1.1.5'
+      log_level: INFO
+      src_types:
+      - h.264+aac
+      - theora+vorbis
+
+The key names and the values are arbitrary and defined solely by the
+user.
