@@ -219,12 +219,27 @@ class Stack(object):
             $HOME/bang-stacks/common_modules/
 
         """
+        cfg = self.config
         bang_config_dir = os.path.abspath(
-                os.path.dirname(self.config.filepath)
+                os.path.dirname(cfg.filepath)
                 )
-        ansible_module_dir = os.path.join(bang_config_dir, 'common_modules')
         playbook_dir = os.path.join(bang_config_dir, 'playbooks')
-        for playbook in self.config.get(A.PLAYBOOKS, []):
+        creds = cfg.get(A.DEPLOYER_CREDS, {})
+        pb_kwargs = {
+                # this allows connection reuse using "ControlPersist":
+                'transport': 'ssh',
+                'module_path': os.path.join(bang_config_dir, 'common_modules'),
+                'remote_pass': creds.get(A.creds.SSH_PASS),
+                # TODO: determine forks
+                # 'forks': options.forks,
+                }
+        # only add the 'remote_user' kwarg if it's in the config, otherwise use
+        # ansible's default behaviour.
+        ssh_user = creds.get(A.creds.SSH_USER)
+        if ssh_user:
+            pb_kwargs['remote_user'] = ssh_user
+
+        for playbook in cfg.get(A.PLAYBOOKS, []):
             playbook_path = os.path.join(playbook_dir, playbook)
 
             # gratuitously stolen from main() in ``ansible-playbook``
@@ -232,24 +247,21 @@ class Stack(object):
             playbook_cb = PlaybookCallbacks(verbose=1)
             runner_cb = PlaybookRunnerCallbacks(stats, verbose=1)
 
-            pb = PlayBook(
-                playbook=playbook_path,
-                module_path=ansible_module_dir,
+            extra_kwargs = {
+                    'playbook': playbook_path,
 
-                # ``host_list`` is used to generate the inventory, but don't
-                # worry, we override the inventory later
-                host_list=[],
+                    # TODO: do we really need new instances of the following
+                    # for each playbook?
+                    'callbacks': playbook_cb,
+                    'runner_callbacks': runner_cb,
+                    'stats': stats,
 
-                # TODO: determine forks
-                # forks=options.forks,
-
-                callbacks=playbook_cb,
-                runner_callbacks=runner_cb,
-                stats=stats,
-
-                # this allows connection reuse using "ControlPersist":
-                transport='ssh',
-            )
+                    # ``host_list`` is used to generate the inventory, but
+                    # don't worry, we override the inventory later
+                    'host_list': [],
+                    }
+            pb_kwargs.update(extra_kwargs)
+            pb = PlayBook(**pb_kwargs)
             pb.inventory = BangsibleInventory(
                     copy.deepcopy(self.groups_and_vars.lists),
                     copy.deepcopy(self.groups_and_vars.dicts),

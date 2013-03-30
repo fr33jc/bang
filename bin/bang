@@ -45,10 +45,15 @@ except ImportError:
     import bang
 
 import os
+import getpass
 from textwrap import dedent
+from bang import attributes as A
 from bang.stack import Stack
 from bang.config import Config
 from bang.util import parse_args, initialize_logging
+
+
+DEFAULT_SSH_USER = getpass.getuser()
 
 
 def get_env_configs():
@@ -56,6 +61,25 @@ def get_env_configs():
     if not raw_env_cfgs:
         return []
     return raw_env_cfgs.split(os.pathsep)
+
+
+def set_ssh_creds(config, args):
+    """
+    Set ssh credentials into config.
+
+    Note that these values might also be set in ~/.bangrc.  If they are
+    specified both in ~/.bangrc and as command-line arguments to ``bang``, then
+    the command-line arguments win.
+
+    """
+    creds = config.get(A.DEPLOYER_CREDS, {})
+    creds[A.creds.SSH_USER] = args.user if args.user else creds.get(
+            A.creds.SSH_USER,
+            DEFAULT_SSH_USER,
+            )
+    if args.ask_pass:
+        creds[A.creds.SSH_PASS] = getpass.getpass('SSH Password: ')
+    config[A.DEPLOYER_CREDS] = creds
 
 
 def main():
@@ -93,6 +117,13 @@ def main():
                     """),
                 'nargs': '*',
                 'metavar': 'CONFIG_SPEC',
+                }),
+            ('--ask-pass', '-k', {
+                'action': 'store_true',
+                'help': 'ask for SSH password',
+                }),
+            ('--user', '-u', {
+                'help': 'set SSH username (default=%s)' % DEFAULT_SSH_USER,
                 }),
             ('--list', {
                 'action': 'store_true',
@@ -155,6 +186,7 @@ def main():
         return
 
     config = Config.from_config_specs(source)
+    set_ssh_creds(config, args)
 
     stack = Stack(config)
 
