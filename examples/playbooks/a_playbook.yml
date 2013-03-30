@@ -1,0 +1,1 @@
+- include: gather_facts.yml target_group=useless
