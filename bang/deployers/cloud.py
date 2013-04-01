@@ -162,7 +162,7 @@ class SecurityGroupRulesetDeployer(RegionedDeployer):
         """
         sg = self.consul.find_secgroup(self.name)
         current = {}
-        for rule in sg.rules:
+        for rule in getattr(sg, 'rules', []):
             src_group = rule.get('group')
             # TODO: allow for groups with different tenant ids.
             if src_group:
@@ -286,15 +286,6 @@ class LoadBalancerDeployer(BaseDeployer):
                 self.find_existing,
                 self.add_to_inventory,
                 ]
-        balance_servers = filter(lambda s: s['name'] == self.balance_server_name,
-                                self.stack.config['servers'])
-        if not balance_servers:
-            raise BangError("No server name '%s' found for load balancer '%s'" %
-                    (self.balance_server_name, self.name))
-        if len(balance_servers) > 1:
-            raise BangError("Multiple server names matching '%s' for load balancer '%s'" %
-                    (self.balance_server_name, self.name))
-        self.balance_server = balance_servers[0]
 
     def find_existing(self):
         """

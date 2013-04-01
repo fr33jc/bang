@@ -183,8 +183,25 @@ class Config(dict):
 
     def _prepare_secgroups(self):
         stack = self[A.NAME]
+        # Special magic groups for lb
+        load_balancer_groups = []
+        for lb in self.get(R.LOAD_BALANCERS, []):
+            for_servers = lb[A.loadbalancer.SERVER_NAMES]
+            for_server = filter(
+                    lambda s: s[A.server.NAME] == for_servers, 
+                    self[R.SERVERS])[0]
+            secgroup_name = '%s-secgroup' % lb[A.loadbalancer.NAME]
+            load_balancer_groups.append({
+                A.secgroup.NAME: secgroup_name,
+                A.secgroup.PROVIDER: for_server[A.server.PROVIDER],
+                A.secgroup.REGION: for_server[A.server.REGION],
+                'description': "Secgroup for %s load balancer" % lb[A.loadbalancer.NAME],
+                A.secgroup.RULES: []})
+
+            for_server.setdefault(A.server.STACK_SECGROUPS, []).append(secgroup_name)
 
         sg_rule_sets = []
+        self.setdefault(R.SERVER_SECURITY_GROUPS, []).extend(load_balancer_groups)
         for sg in self.get(R.SERVER_SECURITY_GROUPS, []):
             provider = sg[A.secgroup.PROVIDER]
             region = sg[A.secgroup.REGION]

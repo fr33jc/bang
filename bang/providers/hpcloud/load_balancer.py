@@ -104,7 +104,7 @@ class HPLoadBalancer():
 
         :param string lb_id:  Delete this LBaaS id
         """
-        log.info("Deleting load balancer %s" % name)
+        log.info("Deleting load balancer %s" % lb_id)
         self._request('delete', '/loadbalancers/%s' % lb_id)
 
     def add_lb_nodes(self, lb_id, nodes):
