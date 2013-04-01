@@ -273,7 +273,7 @@ class RedDwarf(Consul):
         """
         Searches for a db instance named :attr:`name`.
 
-        :param str name:  The name of the target db instance.
+        :param str name:  The name of the target db instance
 
         :param bool running:  A flag to only look for instances that are
             actually *running*.

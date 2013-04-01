@@ -291,6 +291,19 @@ class Config(dict):
                     svars[scope] = self[scope]
             server[A.server.VARS] = svars
 
+    def _prepare_load_balancers(self):
+        """
+        Prepare load balancer variables
+        """
+        stack = {
+                A.NAME: self[A.NAME],
+                A.VERSION: self[A.VERSION],
+                }
+
+        for load_balancer in self.get(R.LOAD_BALANCERS, []):
+            svars = {A.STACK: stack}
+            load_balancer[A.loadbalancer.VARS] = svars
+
     def prepare(self):
         """
         Reorganizes the data such that the deployment logic can find it all
@@ -323,6 +336,7 @@ class Config(dict):
         self._prepare_tags()
         self._prepare_dbs()
         self._prepare_servers()
+        self._prepare_load_balancers()
 
     def validate(self):
         """

@@ -19,7 +19,7 @@ Constants for attribute names of the various resources.
 
 Just a place to stash more magic strings.
 """
-from . import creds, server, secgroup, tags, database, ssh_key
+from . import creds, server, secgroup, tags, database, ssh_key, loadbalancer
 
 # stack attributes
 NAME = 'name'

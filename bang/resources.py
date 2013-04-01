@@ -20,6 +20,7 @@ DATABASE_CREDS = 'database_credentials'
 DATABASE_SECURITY_GROUPS = 'database_security_groups'
 DATABASE_SECURITY_GROUP_RULES = 'database_security_group_rules'
 DATABASES = 'databases'
+LOAD_BALANCERS = 'load_balancers'
 SERVER_SECURITY_GROUPS = 'server_security_groups'
 SERVER_SECURITY_GROUP_RULES = 'server_security_group_rules'
 SERVER_COMMON_ATTRIBUTES = 'server_common_attributes'
@@ -57,7 +58,9 @@ STAGES = [
             DATABASES,
             SERVERS,
             ),
-
+        (
+            LOAD_BALANCERS,
+            ),
         (
             DATABASE_SECURITY_GROUP_RULES,
             ),

@@ -18,6 +18,7 @@ import time
 from .. import resources as R, attributes as A
 from ..providers import get_provider
 from ..util import log
+from .. import BangError
 from .deployer import Deployer
 
 
@@ -268,6 +269,85 @@ class DatabaseDeployer(BaseDeployer):
                 )
 
 
+class LoadBalancerDeployer(BaseDeployer):
+    def __init__(self, *args, **kwargs):
+        super(LoadBalancerDeployer, self).__init__(*args, **kwargs)
+        self.instance_name = "%s-%s" % (self.stack.name, self.name)
+        self.lb_attrs = None
+        self.delete_these_nodes = []
+        self.add_these_nodes = []
+        self.phases = [
+                (True, self.find_existing),
+                (lambda: not self.lb_attrs, self.create),
+                (True, self.add_to_inventory),
+                (True, self.configure_nodes),
+                ]
+        self.inventory_phases = [
+                self.find_existing,
+                self.add_to_inventory,
+                ]
+        balance_servers = filter(lambda s: s['name'] == self.balance_server_name,
+                                self.stack.config['servers'])
+        if not balance_servers:
+            raise BangError("No server name '%s' found for load balancer '%s'" %
+                    (self.balance_server_name, self.name))
+        if len(balance_servers) > 1:
+            raise BangError("Multiple server names matching '%s' for load balancer '%s'" %
+                    (self.balance_server_name, self.name))
+        self.balance_server = balance_servers[0]
+
+    def find_existing(self):
+        """
+        Searches for existing load balancer instance with matching name.
+        Doesn't populate 'details' including the nodes and virtual IPs
+        """
+        self.lb_attrs = self.consul.find_lb_by_name(self.instance_name)
+
+    def create(self):
+        """Creates a new load balancer"""
+        self.lb_attrs = self.consul.create_lb(
+                self.instance_name,
+                protocol=self.protocol,
+                port=self.port,
+                )
+
+    def configure_nodes(self):
+        """Ensure that the LB's nodes matches the stack"""
+        # Since load balancing runs after server provisioning,
+        # the servers should already be created regardless of 
+        # whether this was a preexisting load balancer or not.
+        # We also have the existing nodes, because add_to_inventory
+        # has been called already
+        required_nodes = set()
+        for host, attrs in self.stack.groups_and_vars.dicts.items():
+            if attrs.get(A.SERVER_CLASS) == self.balance_server_name:
+                required_nodes.add(host)
+
+        log.debug("Matching existing lb nodes to required %s (port %s)" %
+               (", ".join(required_nodes), self.backend_port))
+
+        self.consul.match_lb_nodes(
+            self.lb_attrs[A.loadbalancer.ID],
+            self.lb_attrs[A.loadbalancer.NODES_KEY],
+            required_nodes,
+            self.backend_port)
+
+        self.lb_attrs = self.consul.lb_details(self.lb_attrs[A.loadbalancer.ID]) 
+
+
+    def add_to_inventory(self):
+        """Adds lb IPs to stack inventory"""
+        if self.lb_attrs:
+            self.lb_attrs = self.consul.lb_details(self.lb_attrs[A.loadbalancer.ID])
+            host = self.lb_attrs['virtualIps'][0]['address']
+            self.stack.add_host(
+                    host,
+                    [self.name],
+                    self.lb_attrs
+                    )
+
+
+
 DEPLOYER_MAP = {
         R.SSH_KEYS: SSHKeyDeployer,
         R.SERVERS: ServerDeployer,
@@ -275,6 +355,7 @@ DEPLOYER_MAP = {
         R.SERVER_SECURITY_GROUP_RULES: SecurityGroupRulesetDeployer,
         R.BUCKETS: BucketDeployer,
         R.DATABASES: DatabaseDeployer,
+        R.LOAD_BALANCERS: LoadBalancerDeployer,
         }
 
 

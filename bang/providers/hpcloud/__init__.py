@@ -23,6 +23,7 @@ from ..openstack import (OpenStack, Nova, RedDwarf,
         DEFAULT_STORAGE_SIZE_GB, DEFAULT_TIMEOUT_S, db_to_dict)
 from .nova_ext import DiabloVolumeManager
 from .reddwarf import HPDbaas
+from .load_balancer import HPLoadBalancer
 
 
 def fix_hp_addrs(server):
@@ -72,7 +73,6 @@ class HPNova(Nova):
                 ])
         s = super(HPNova, self).create_server(*args, **kwargs)
         return fix_hp_addrs(s)
-
 
 class HPRedDwarf(RedDwarf):
     def create_db(self, instance_name, instance_type,
@@ -152,7 +152,6 @@ class HPRedDwarf(RedDwarf):
         cur.execute("flush privileges")
         return db_to_dict(instance)
 
-
 class HPCloud(OpenStack):
 
     REDDWARF_SERVICE_TYPE = 'hpext:dbaas'
@@ -163,6 +162,11 @@ class HPCloud(OpenStack):
         cm = self.CONSUL_MAP
         cm[R.SERVERS] = HPNova
         cm[R.DATABASES] = HPRedDwarf
+        cm[R.LOAD_BALANCERS] = HPLoadBalancer
+
+    @property
+    def load_balancer_client(self):
+        return self.CONSUL_MAP[R.LOAD_BALANCERS](self)
 
     def _get_nova_client(self):
         args = self.get_nova_client_args()
@@ -230,3 +234,4 @@ class HPCloud(OpenStack):
             self.nova_client.client.os_access_key_id = access_key_id
             self.nova_client.client.os_secret_key = secret_access_key
         self.nova_client.authenticate()
+
