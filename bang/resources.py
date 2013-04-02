@@ -27,6 +27,8 @@ SERVER_COMMON_ATTRIBUTES = 'server_common_attributes'
 SERVERS = 'servers'
 SSH_KEYS = 'ssh_pub_keys'
 
+DYNAMIC_LB_SEC_GROUPS = '_load_balancer_sec_groups'
+
 # This is where the inter-resource dependencies are resolved.  Keep it simple
 # until it needs to be more complicated.
 #
@@ -63,6 +65,7 @@ STAGES = [
             ),
         (
             DATABASE_SECURITY_GROUP_RULES,
+            DYNAMIC_LB_SEC_GROUPS,
             ),
         ]
 

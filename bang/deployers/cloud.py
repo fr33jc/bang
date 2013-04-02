@@ -162,6 +162,7 @@ class SecurityGroupRulesetDeployer(RegionedDeployer):
         """
         sg = self.consul.find_secgroup(self.name)
         current = {}
+
         for rule in getattr(sg, 'rules', []):
             src_group = rule.get('group')
             # TODO: allow for groups with different tenant ids.
@@ -190,6 +191,7 @@ class SecurityGroupRulesetDeployer(RegionedDeployer):
                 del current[exp]
             else:
                 self.create_these_rules.append(exp)
+
 
         self.delete_these_rules.extend(current.itervalues())
 
@@ -270,6 +272,22 @@ class DatabaseDeployer(BaseDeployer):
 
 
 class LoadBalancerDeployer(BaseDeployer):
+    """
+    Cloud-managed load balancer deployer. Assumes a consul able
+    to create and discover LB instances, as well as match existing
+    backend 'nodes' to a list it's given. It is assumed only a single
+    'instance' per distinct load balancer needs to be created (i.e.
+    that any elasticity is handled by the cloud service)
+    E.g config:
+      load_balancers:
+      - name: test-balancer
+        balance_server_name: server_defined_in_servers_section
+        provider: hpcloud
+        backend_port: '8080'
+        protocol: tcp
+        port: '443'
+    """
+
     def __init__(self, *args, **kwargs):
         super(LoadBalancerDeployer, self).__init__(*args, **kwargs)
         self.instance_name = "%s-%s" % (self.stack.name, self.name)
@@ -296,10 +314,14 @@ class LoadBalancerDeployer(BaseDeployer):
 
     def create(self):
         """Creates a new load balancer"""
+        required_nodes = self._get_required_nodes()
         self.lb_attrs = self.consul.create_lb(
                 self.instance_name,
                 protocol=self.protocol,
                 port=self.port,
+                nodes=required_nodes,
+                node_port=str(self.backend_port),
+                algorithm=getattr(self, 'algorithm', None)
                 )
 
     def configure_nodes(self):
@@ -309,10 +331,7 @@ class LoadBalancerDeployer(BaseDeployer):
         # whether this was a preexisting load balancer or not.
         # We also have the existing nodes, because add_to_inventory
         # has been called already
-        required_nodes = set()
-        for host, attrs in self.stack.groups_and_vars.dicts.items():
-            if attrs.get(A.SERVER_CLASS) == self.balance_server_name:
-                required_nodes.add(host)
+        required_nodes = self._get_required_nodes()
 
         log.debug("Matching existing lb nodes to required %s (port %s)" %
                (", ".join(required_nodes), self.backend_port))
@@ -325,19 +344,51 @@ class LoadBalancerDeployer(BaseDeployer):
 
         self.lb_attrs = self.consul.lb_details(self.lb_attrs[A.loadbalancer.ID]) 
 
+    def _get_required_nodes(self):
+        required_nodes = set()
+        for host, attrs in self.stack.groups_and_vars.dicts.items():
+            if attrs.get(A.SERVER_CLASS) == self.balance_server_name:
+                required_nodes.add(host)
+        return required_nodes
+
 
     def add_to_inventory(self):
         """Adds lb IPs to stack inventory"""
         if self.lb_attrs:
             self.lb_attrs = self.consul.lb_details(self.lb_attrs[A.loadbalancer.ID])
             host = self.lb_attrs['virtualIps'][0]['address']
+            self.stack.add_lb_secgroup(self.name, [host], self.backend_port)
             self.stack.add_host(
                     host,
                     [self.name],
                     self.lb_attrs
                     )
 
+class LoadBalancerSecurityGroupsDeployer(SecurityGroupRulesetDeployer):
+    def __init__(self, *args, **kwargs):
+        super(LoadBalancerSecurityGroupsDeployer, self).__init__(*args, **kwargs)
+        self.group = None
+        self.attrs = {}
 
+    def find_existing(self):
+        # Prepopulate rules from the LB stack variables
+        lb_entry = self.stack.lb_sec_groups.dicts.get(self.load_balancer)
+        if not lb_entry:
+            raise Exception, \
+                "No load balancer host found in stack for '%s'" % self.load_balancer
+        for host in lb_entry['hosts']:
+            # Create a rule for this LB. Need a mask or nova interprets it 
+            # as a group rule rather than IP rule
+            host = host + "/32"
+            rule = {
+                    A.secgroup.PROTOCOL: 'tcp',
+                    A.secgroup.FROM: lb_entry['port'],
+                    A.secgroup.TO: lb_entry['port'],
+                    A.secgroup.SOURCE: host,
+                   }       
+            self.rules.append(rule)
+
+        super(LoadBalancerSecurityGroupsDeployer, self).find_existing()
 
 DEPLOYER_MAP = {
         R.SSH_KEYS: SSHKeyDeployer,
@@ -347,6 +398,7 @@ DEPLOYER_MAP = {
         R.BUCKETS: BucketDeployer,
         R.DATABASES: DatabaseDeployer,
         R.LOAD_BALANCERS: LoadBalancerDeployer,
+        R.DYNAMIC_LB_SEC_GROUPS: LoadBalancerSecurityGroupsDeployer,
         }
 
 

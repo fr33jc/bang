@@ -191,13 +191,17 @@ class Config(dict):
                     lambda s: s[A.server.NAME] == for_servers, 
                     self[R.SERVERS])[0]
             secgroup_name = '%s-secgroup' % lb[A.loadbalancer.NAME]
-            load_balancer_groups.append({
+            sec_group = {
                 A.secgroup.NAME: secgroup_name,
                 A.secgroup.PROVIDER: for_server[A.server.PROVIDER],
                 A.secgroup.REGION: for_server[A.server.REGION],
                 'description': "Secgroup for %s load balancer" % lb[A.loadbalancer.NAME],
-                A.secgroup.RULES: []})
+                A.secgroup.RULES: [],
+                'load_balancer': lb[A.loadbalancer.NAME],
+            }
 
+            load_balancer_groups.append(sec_group)
+            self.setdefault(R.DYNAMIC_LB_SEC_GROUPS, []).append(sec_group)
             for_server.setdefault(A.server.STACK_SECGROUPS, []).append(secgroup_name)
 
         sg_rule_sets = []
@@ -218,7 +222,11 @@ class Config(dict):
 
                 r[A.secgroup.TARGET] = dressy_name
                 rules.append(r)
-            sg_rule_sets.append(
+
+            # For load balancer SGs, don't add rule sets now; 
+            # it'll get done later
+            if not sg.get('load_balancer', None):
+                sg_rule_sets.append(
                     {
                         A.secgroup.NAME: dressy_name,
                         A.secgroup.PROVIDER: provider,

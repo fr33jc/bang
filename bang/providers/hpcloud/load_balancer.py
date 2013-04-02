@@ -65,8 +65,8 @@ class HPLoadBalancer():
             return matching[0]
         return None
 
-    def create_lb(self, name, protocol='HTTP', port='80',
-            virtual_ips=[], nodes=[]):
+    def create_lb(self, name, protocol='HTTP', port=80, algorithm=None,
+            virtual_ips=[], nodes=[], node_port=None):
         """
         Create a new LBaaS instance. A name is required. If no nodes
         are required, the instance ``status`` (after it's built) will be
@@ -77,24 +77,31 @@ class HPLoadBalancer():
 
         :param string protocol:  Supported: HTTP, TCP
 
-        :param string port:  The external port
+        :param int port:  The external port. Supported: 80, 443, seemingly
 
         :param list virtual_ips:  Use an existing IP (allows multiple
                                   ports per IP)
 
-        :param list nodes:  Nodes to add. {address, port, [condition]}. 
+        :param list nodes:  Nodes addresses to add
         """
         log.info("Creating load balancer '%s'" % name)
         protocol = protocol.upper()
+        nodes_to_add = []
+        if nodes:
+            nodes_to_add = map(
+                    lambda n: {'address': n, 'port': str(node_port)}, 
+                    nodes
+                    )
         data = {
             'name': name,
             'protocol': protocol,
-            'port': port,
-            'nodes': nodes
+            'port': str(port),
+            'nodes': nodes_to_add,
         }
         if virtual_ips:
             data['virtualIps'] = map(lambda i: {'id': i}, virtual_ips)
-
+        if algorithm:
+            data['algorithm'] = algorithm
         resp, body = self._request('post', '/loadbalancers', data=data)
         return body
 
@@ -155,7 +162,7 @@ class HPLoadBalancer():
         
         if add_nodes:
             nodes_to_add = [
-                    {'address': n, 'port': host_port}
+                    {'address': n, 'port': str(host_port)}
                     for n in add_nodes
             ]
             args = (lb_id, nodes_to_add)

@@ -163,6 +163,7 @@ class HPCloud(OpenStack):
         cm[R.SERVERS] = HPNova
         cm[R.DATABASES] = HPRedDwarf
         cm[R.LOAD_BALANCERS] = HPLoadBalancer
+        cm[R.DYNAMIC_LB_SEC_GROUPS] = HPNova
 
     @property
     def load_balancer_client(self):

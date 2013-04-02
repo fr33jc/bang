@@ -51,6 +51,8 @@ class Stack(object):
         self.shared_namespaces = {}
 
         self.groups_and_vars = SharedMap(self.manager)
+        self.lb_sec_groups = SharedMap(self.manager)
+
         """
         Deployers stash inventory data for any newly-created servers in this
         mapping object.  Note: uses SharedMap because this must be
@@ -119,6 +121,22 @@ class Stack(object):
             attr = getattr(res, attr_name)
             if attr.startswith(prefix):
                 return res
+
+    def add_lb_secgroup(self, lb_name, hosts, port):
+        """
+        Used by the load balancer deployer to register a hostname
+        for a load balancer, in order that security group rules can be
+        applied later. This is multiprocess-safe, but since keys are
+        accessed only be a single load balancer deployer there should be
+        no conflicts.
+
+        :param str lb_name: The load balancer name (as per the config file)
+
+        :param :class:`list` hosts:  The load balancer host[s], once known
+
+        :param port:  The backend port that the LB will connect on
+        """
+        self.lb_sec_groups.merge(lb_name, {'hosts': hosts, 'port': port})
 
     def add_host(self, host, group_names=None, host_vars=None):
         """
