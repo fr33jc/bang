@@ -100,6 +100,15 @@ API
     :show-inheritance:
 
 
+:mod:`bang.providers.hpcloud.load_balancer`
+-------------------------------------------
+
+.. automodule:: bang.providers.hpcloud.load_balancer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`bang.providers.hpcloud.nova_ext`
 --------------------------------------
 
