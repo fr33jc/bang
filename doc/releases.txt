@@ -2,11 +2,17 @@ Release Summary
 ===============
 
 
-0.6 - TBD
----------
+0.6 - April 3, 2013
+-------------------
+- HP Cloud provider
+
+    - Add LBaaS support.
+
 - Add "127.0.0.1" to the inventory to enable local plays.
 - Add deployer for externally-deployed servers (e.g. physical servers
-  in a traditional server room, unmanaged virtual servers)
+  in a traditional server room, unmanaged virtual servers).
+- Reuse ssh connections when running playbooks.
+- Allow setting ssh username+password as command-line arguments.
 
 0.5 - March 11, 2013
 --------------------
