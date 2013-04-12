@@ -2,6 +2,29 @@ Release Summary
 ===============
 
 
+0.7 - April 12, 2013
+--------------------
+- *BREAKING CHANGE*:  In a stack config file, the top-level resource
+  definition containers were lists.  From 0.7 onward, they must be
+  defined as dictionaries.  This allows resource definitions to be
+  deep-merged.  The ``just_run_a_playbook.yml`` example was updated
+  to demonstrate the new config format.
+
+  This change extends the reuse of common config stanzas that was
+  previously only available for *general stack properties* and for
+  *configuration scopes* to *resource definitions*.  Prior to this
+  change, the main purpose for this deep-merge behaviour was to allow
+  sysadmins to use a known working dev stack config file and specify
+  a *subset config file* to override secrets (e.g. encryption keys)
+  when deploying production stacks.  With the deep-merging of
+  resource definitions, deployers can override any part of the config
+  file and break up their stack configurations into multiple reusable
+  *subset config files* as is most convenient for them.  For example,
+  one could easily deploy stack clones in multiple public cloud
+  regions using a single base stack config and a subset stack config
+  for each target region overriding ``region_name`` in the server
+  definitions.
+
 0.6 - April 3, 2013
 -------------------
 - HP Cloud provider
