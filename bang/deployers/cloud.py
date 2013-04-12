@@ -277,15 +277,18 @@ class LoadBalancerDeployer(BaseDeployer):
     to create and discover LB instances, as well as match existing
     backend 'nodes' to a list it's given. It is assumed only a single
     'instance' per distinct load balancer needs to be created (i.e.
-    that any elasticity is handled by the cloud service)
-    E.g config:
+    that any elasticity is handled by the cloud service).
+
+    Example config::
+
       load_balancers:
-      - name: test-balancer
-        balance_server_name: server_defined_in_servers_section
-        provider: hpcloud
-        backend_port: '8080'
-        protocol: tcp
-        port: '443'
+        test_balancer:
+          balance_server_name: server_defined_in_servers_section
+          provider: hpcloud
+          backend_port: '8080'
+          protocol: tcp
+          port: '443'
+
     """
 
     def __init__(self, *args, **kwargs):
