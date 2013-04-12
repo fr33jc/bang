@@ -119,7 +119,7 @@ load_balancers:
 Configuration Scopes
 ~~~~~~~~~~~~~~~~~~~~
 Any top-level section name that is not specified above as a reserved
-key in `General Stack Properties`_ or in `Stack Resources
+key in `General Stack Properties`_ or in `Stack Resource
 Definitions`_, is parsed and categorized as a custom configuration
 scope.
 
