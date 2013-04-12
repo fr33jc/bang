@@ -376,7 +376,7 @@ class Config(dict):
                 (R.SERVER_SECURITY_GROUPS, A.secgroup.NAME),
                 (R.LOAD_BALANCERS, A.loadbalancer.NAME),
                 (R.DATABASES, A.database.NAME),
-                (R.BUCKETS, A.NAME)):
+                (R.BUCKETS, A.NAME),
                 (R.QUEUES, A.NAME)):
             self[stanza_key] = self._convert_to_list(stanza_key, name_key)
 
