@@ -17,6 +17,17 @@ General Features
     - The corollary is that the setuptools-style (i.e. entry points
       defined in setup.py) mechanism is *not* desirable.
 
+- In addition to the plugin mechanism, have some hookable events to
+  make integration easier with existing tools that can't easily be
+  converted to plugins.  E.g.::
+
+    exec_hooks:
+      pre_deploy:
+      post_success:
+      - /bin/echo yay
+      post_failure:
+      - /bin/echo boo
+
 - Implement ``--dry-run``.
 - Validate stack configuration.
 
