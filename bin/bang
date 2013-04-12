@@ -125,6 +125,10 @@ def main():
             ('--user', '-u', {
                 'help': 'set SSH username (default=%s)' % DEFAULT_SSH_USER,
                 }),
+            ('--dump-config', {
+                'choices': ['json', 'yaml', 'yml'],
+                'help': 'Dump the merged config in the given format, then quit'
+                }),
             ('--list', {
                 'action': 'store_true',
                 'help': dedent("""\
@@ -186,6 +190,19 @@ def main():
         return
 
     config = Config.from_config_specs(source)
+
+    if args.dump_config:
+
+        if args.dump_config in ('yaml', 'yml'):
+            import yaml
+            print yaml.safe_dump(dict(config))
+        elif args.dump_config == 'json':
+            import json
+            print json.dumps(config)
+        else:
+            print config
+        sys.exit()
+
     set_ssh_creds(config, args)
 
     stack = Stack(config)

@@ -82,9 +82,10 @@ cloud boundaries.  For example, a single stack might comprise:
     - Web application servers in an OpenStack public cloud
     - Message queues and object storage from AWS (i.e. SQS)
 
-Every stack resource key maps to a *list of definitions* for that
-particular resource type.  Each definition in the list is a key-value
-map of attributes.  Most attributes are specific to the type of
+Every stack resource key maps to a *dictionary* for that
+particular resource type, where the keys are resource names.  
+Each value of the dictionary is a key-value map of attributes.  
+Most attributes are specific to the type of
 resource being deployed.
 
 Every cloud resource definition must contain a ``provider`` key whose
@@ -112,6 +113,8 @@ server_security_groups
 servers
     E.g. EC2, OpenStack Nova, VPS virtual machines.
 
+load_balancers:
+    E.g. ElasticLoadBalancer, HP cloud LBaaS
 
 Configuration Scopes
 ~~~~~~~~~~~~~~~~~~~~

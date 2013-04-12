@@ -329,6 +329,18 @@ class Config(dict):
             svars = {A.STACK: stack}
             load_balancer[A.loadbalancer.VARS] = svars
 
+    def _convert_to_list(self, stanza_key, name_key):
+        """
+        Convert self[stanza_key] to a list. For each k, v
+        k, v = self[stanza_key].iteritems() assign 
+        v[name_key] = k
+        """
+        converted_list = []
+        for k, v in self.get(stanza_key, {}).iteritems():
+            v[name_key] = k
+            converted_list.append(v)
+        return converted_list
+
     def prepare(self):
         """
         Reorganizes the data such that the deployment logic can find it all
@@ -356,6 +368,18 @@ class Config(dict):
         """
         # TODO: take server_common_attributes and disperse it among the various
         # server stanzas
+
+        # First stage - turn all the dicts (SERVER, SECGROUP, DATABASE, LOADBAL) 
+        # into lists now they're merged properly
+        for stanza_key, name_key in (
+                (R.SERVERS, A.server.NAME),
+                (R.SERVER_SECURITY_GROUPS, A.secgroup.NAME),
+                (R.LOAD_BALANCERS, A.loadbalancer.NAME),
+                (R.DATABASES, A.database.NAME),
+                (R.BUCKETS, A.NAME)):
+                (R.QUEUES, A.NAME)):
+            self[stanza_key] = self._convert_to_list(stanza_key, name_key)
+
         self._prepare_ssh_keys()
         self._prepare_secgroups()
         self._prepare_tags()
