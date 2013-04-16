@@ -2,6 +2,13 @@ Release Summary
 ===============
 
 
+0.7.1 - April 16, 2013
+----------------------
+- Fix installation breakage caused by conflicting dependency
+  statements between python-reddwarfclient and python-novaclient.
+  The resolution was to remove the explicit dependency on
+  ``prettytable``.
+
 0.7 - April 12, 2013
 --------------------
 - *BREAKING CHANGE*:  In a stack config file, the top-level resource
