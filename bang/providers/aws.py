@@ -156,6 +156,42 @@ class EC2(Consul):
             raise TimeoutError('Could not launch server within allotted time.')
         return server_to_dict(running)
 
+    def find_secgroup(self, name):
+        """
+        Find a security group by name. Returns None if there are no matches
+        """
+        res = self.ec2.get_all_security_groups(groupnames=[name])
+        if res:
+            return res[0]
+        return None
+    
+    def create_secgroup(self, name, description):
+        return self.ec2.create_security_group(name, description)
+
+    def create_secgroup_rule(self, *args):
+        """
+        Create security group, either for IP range or sec group.
+
+        :param :class:`list` args:  A list of input parameters for 
+            the rule. Each element consists of:
+               protocol, from_port, to_port, SOURCE, sg_name
+            SOURCE is either an ip range (w.x.y.z/nn) or secgroup name
+        """
+        (protocol, from_port, to_port, src, sg_name) = args
+        kwargs = {
+            'ip_protocol': protocol,
+            'from_port': from_port,
+            'to_port': to_port
+        }
+        sg = self.find_secgroup(sg_name)
+        if not sg:
+            raise BangError("Security group not found, %s" % sg_name)
+        if '/' in src:
+            # Treat as cidr (/ is mask)
+            kwargs['cidr_ip'] = src
+        else:
+            kwargs['src_group'] = self.find_secgroup(src)
+        sg.authorize(**kwargs)
 
 class S3(Consul):
     pass
