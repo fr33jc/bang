@@ -19,7 +19,7 @@ import boto.ec2
 from boto.exception import EC2ResponseError
 import time
 
-from .. import TimeoutError, resources as R, attributes as A
+from .. import BangError, TimeoutError, resources as R, attributes as A
 from ..util import log, poll_with_timeout
 from .bases import Provider, Consul
 
@@ -40,6 +40,67 @@ def server_to_dict(server):
             A.server.PUBLIC_IPS: [server.public_dns_name],
             A.server.PRIVATE_IPS: [server.private_dns_name],
             }
+
+
+class EC2SecGroup(object):
+    """
+    Represents an EC2 security group.
+
+    The :attr:`rules` attribute is a specialized dict whose keys are the
+    *normalized* rule definitions, and whose values are EC2 grants which can be
+    kwargs-expanded when passing
+    :meth:`boto.ec2.securitygroup.SecurityGroup.revoke`.  E.g.
+
+        {
+            ('tcp', 1, 65535, 'group-foo'): {
+                'ip_protocol': 'tcp',
+                'from_port': '1',
+                'to_port': '65535',
+                'src_group': 'group-foo',
+                'target': SecurityGroup:group-bar,
+                },
+            ('tcp', 8080, 8080, '15.183.202.114/32'):  {
+                'ip_protocol': 'tcp',
+                'from_port': '8080',
+                'to_port': '8080',
+                'cidr_ip': '15.183.202.114/32',
+                'target': SecurityGroup:group-bar,
+                },
+        }
+
+    This also maintains a reference to the original
+    :class:`boto.ec2.securitygroup.SecurityGroup` instance.
+
+    Suitable for returning from :meth:`EC2.find_secgroup`.
+
+    """
+    def __init__(self, ec2sg):
+        owner_id = ec2sg.owner_id
+        rules = {}
+        for rule in ec2sg.rules:
+            p = rule.ip_protocol
+            f = int(rule.from_port)
+            t = int(rule.to_port)
+            core = {
+                    'ip_protocol': p,
+                    'from_port': f,
+                    'to_port': t,
+                    'target': ec2sg,
+                    }
+            for g in rule.grants:
+                parsed = {}
+                if g.cidr_ip:
+                    s = parsed['source'] = str(g.cidr_ip)
+                elif g.owner_id == owner_id and g.name == ec2sg.name:
+                    parsed['source_self'] = True
+                    s = ec2sg.name
+                else:
+                    parsed['source_group'] = '%s/%s' % (g.owner_id, g.name)
+                    s = g.name
+                parsed.update(core)
+                rules[(p, f, t, s)] = parsed
+        self.rules = rules
+        self.ec2sg = ec2sg
 
 
 class EC2(Consul):
@@ -158,40 +219,60 @@ class EC2(Consul):
 
     def find_secgroup(self, name):
         """
-        Find a security group by name. Returns None if there are no matches
+        Find a security group by name.
+
+        Returns a :class:`EC2SecGroup` instance if found, otherwise returns
+        None.
+
         """
-        res = self.ec2.get_all_security_groups(groupnames=[name])
+        res = self.ec2.get_all_security_groups(filters={'group-name': name})
         if res:
-            return res[0]
-        return None
-    
+            return EC2SecGroup(res[0])
+
     def create_secgroup(self, name, description):
+        """
+        Creates a new server security group.
+
+        :param str name:  The name of the security group to create.
+        :param str description:  A short description of the group.
+
+        """
         return self.ec2.create_security_group(name, description)
+        log.debug("... created group %s" % name)
 
-    def create_secgroup_rule(self, *args):
+    def create_secgroup_rule(self, protocol, from_port, to_port,
+            source, target):
         """
-        Create security group, either for IP range or sec group.
+        Creates a new server security group rule.
 
-        :param :class:`list` args:  A list of input parameters for 
-            the rule. Each element consists of:
-               protocol, from_port, to_port, SOURCE, sg_name
-            SOURCE is either an ip range (w.x.y.z/nn) or secgroup name
+        :param str protocol:  E.g. ``tcp``, ``icmp``, etc...
+        :param int from_port:  E.g. ``1``
+        :param int to_port:  E.g. ``65535``
+        :param str source:
+        :param str target:  The target security group.  I.e. the group in which
+            this rule should be created.
+
         """
-        (protocol, from_port, to_port, src, sg_name) = args
         kwargs = {
             'ip_protocol': protocol,
             'from_port': from_port,
             'to_port': to_port
         }
-        sg = self.find_secgroup(sg_name)
+        sg = self.find_secgroup(target).ec2sg
         if not sg:
-            raise BangError("Security group not found, %s" % sg_name)
-        if '/' in src:
+            raise BangError("Security group not found, %s" % target)
+        if '/' in source:
             # Treat as cidr (/ is mask)
-            kwargs['cidr_ip'] = src
+            kwargs['cidr_ip'] = source
         else:
-            kwargs['src_group'] = self.find_secgroup(src)
+            kwargs['src_group'] = self.find_secgroup(source).ec2sg
         sg.authorize(**kwargs)
+
+    def delete_secgroup_rule(self, rule_def):
+        """Deletes the security group rule identified by :attr:`rule_def`"""
+        sg = rule_def.pop('target')
+        sg.revoke(**rule_def)
+
 
 class S3(Consul):
     pass

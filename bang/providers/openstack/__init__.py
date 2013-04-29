@@ -60,6 +60,42 @@ def db_to_dict(db):
             }
 
 
+class NovaSecGroup(object):
+    """
+    Represents a Nova security group.
+
+    The :attr:`rules` attribute is a specialized dict whose keys are the
+    *normalized* rule definitions, and whose values are the *Nova-specific*
+    rule IDs.  E.g.
+
+        {
+            ('tcp', 1, 65535, 'group-foo'): 400459,
+            ('tcp', 8080, 8080, '15.183.202.114/32'): 424099,
+        }
+
+    Suitable for returning from :meth:`Nova.find_secgroup`.
+
+    """
+    def __init__(self, novasg):
+        rules = {}
+        for rule in novasg.rules:
+            src_group = rule.get('group')
+            # TODO: allow for groups with different tenant ids.
+            if src_group:
+                src = src_group['name']
+            else:
+                src = rule['ip_range'].get('cidr', '')
+            parsed = (
+                    rule.get('ip_protocol'),
+                    rule.get('from_port'),
+                    rule.get('to_port'),
+                    src,
+                    )
+            rules[parsed] = rule['id']
+        self.rules = rules
+        self.novasg = novasg
+
+
 class Nova(Consul):
     """The consul for the OpenStack compute service."""
     def __init__(self, *args, **kwargs):
@@ -189,18 +225,15 @@ class Nova(Consul):
 
     def find_secgroup(self, name):
         """
-        Searches for, and returns a
-        :class:`novaclient.v1_1.security_groups.SecurityGroup` named
-        :attr:`name`.
+        Find a security group by name.
+
+        Returns a :class:`NovaSecGroup` instance if found, otherwise returns
+        None.
+
         """
         groups = self.nova.security_groups.findall(name=name)
-        if not groups:
-            return
-        # TODO: will this ever happen?
-        if len(groups) > 1:
-            log.warn("Found too many groups named %s" % name)
-        log.debug("... found group %s" % name)
-        return groups.pop(0)
+        if groups:
+            return NovaSecGroup(groups[0])
 
     def create_secgroup(self, name, desc):
         """

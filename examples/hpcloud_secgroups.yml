@@ -1,0 +1,49 @@
+# General Stack Properties
+# ------------------------
+name: hpcloud_secgroups
+
+version: '1.0'
+
+logging:
+  console_level: DEBUG
+
+
+# Dynamic Stack Resources
+# -----------------------
+server_security_groups:
+  stack_group_A:
+    provider: hpcloud
+    region_name: az-3.region-a.geo-1
+    description: Sample security group for the stack
+    rules:
+    # allow access between all members of this group
+    - source_self: true
+      protocol: tcp
+      from_port: 1
+      to_port: 65535
+
+    # allow http from some cidr address
+    - source: 192.168.0.1/32
+      protocol: tcp
+      from_port: 443
+      to_port: 443
+
+  stack_group_B:
+    provider: hpcloud
+    region_name: az-3.region-a.geo-1
+    description: Sample security group for the stack
+    rules:
+    # allow access between all members of this group
+    - source: stack_group_A
+      source_stack: True
+      protocol: tcp
+      from_port: 1
+      to_port: 65535
+
+    # allow http from some cidr address
+    - source: 192.168.0.1/32
+      protocol: tcp
+      from_port: 443
+      to_port: 443
+
+# vim: set et sw=2 sts=2 ts=2:

@@ -18,7 +18,6 @@ import time
 from .. import resources as R, attributes as A
 from ..providers import get_provider
 from ..util import log
-from .. import BangError
 from .deployer import Deployer
 
 
@@ -161,23 +160,10 @@ class SecurityGroupRulesetDeployer(RegionedDeployer):
 
         """
         sg = self.consul.find_secgroup(self.name)
-        current = {}
 
-        for rule in getattr(sg, 'rules', []):
-            src_group = rule.get('group')
-            # TODO: allow for groups with different tenant ids.
-            if src_group:
-                src = src_group['name']
-            else:
-                src = rule['ip_range'].get('cidr', '')
-            parsed = (
-                    rule.get('ip_protocol'),
-                    rule.get('from_port'),
-                    rule.get('to_port'),
-                    src,
-                    )
-            current[parsed] = rule['id']
-
+        current = sg.rules
+        log.debug('Current rules: %s' % current)
+        log.debug('Intended rules: %s' % self.rules)
         exp_rules = []
         for rule in self.rules:
             exp = (
@@ -191,7 +177,6 @@ class SecurityGroupRulesetDeployer(RegionedDeployer):
                 del current[exp]
             else:
                 self.create_these_rules.append(exp)
-
 
         self.delete_these_rules.extend(current.itervalues())
 
@@ -209,9 +194,9 @@ class SecurityGroupRulesetDeployer(RegionedDeployer):
             args = rule + (self.name, )
             self.consul.create_secgroup_rule(*args)
             log.info("Authorized: %s" % str(rule))
-        for rule_id in self.delete_these_rules:
-            self.consul.delete_secgroup_rule(rule_id)
-            log.info("Revoked: %s" % rule_id)
+        for rule in self.delete_these_rules:
+            self.consul.delete_secgroup_rule(rule)
+            log.info("Revoked: %s" % rule)
 
 
 class BucketDeployer(BaseDeployer):

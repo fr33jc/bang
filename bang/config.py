@@ -216,9 +216,12 @@ class Config(dict):
             for rule in sg[A.secgroup.RULES]:
                 r = rule.copy()
 
-                # generate dressy source if necessary
+                # handle special sources
                 if rule.get(A.secgroup.SOURCE_SELF):
                     r[A.secgroup.SOURCE] = dressy_name
+                elif rule.get(A.secgroup.SOURCE_STACK):
+                    r[A.secgroup.SOURCE] = '%s-%s' % (
+                            stack, rule[A.secgroup.SOURCE])
 
                 r[A.secgroup.TARGET] = dressy_name
                 rules.append(r)
