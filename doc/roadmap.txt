@@ -61,7 +61,7 @@ General Features
 
 Providers
 ---------
-- Add AWS provider.
+- AWS
 
     - Add any deployers that don't really apply to less featureful
       public cloud providers.  E.g. SQS, ELB, SNS, etc...
