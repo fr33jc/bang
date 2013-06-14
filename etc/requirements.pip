@@ -18,7 +18,7 @@
 # logutils
 #     - Homepage:  http://code.google.com/p/logutils/
 #     - License:  BSD 3-Clause
-logutils==0.3.2
+logutils>=0.3.2
 
 # PyYAML
 #     - Homepage:  http://pyyaml.org/
