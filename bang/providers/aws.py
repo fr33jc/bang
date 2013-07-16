@@ -110,14 +110,19 @@ class EC2(Consul):
         creds = self.provider.creds
         self.access_key_id = creds[A.creds.ACCESS_KEY_ID]
         self.secret_key = creds[A.creds.SECRET_ACCESS_KEY]
+        self._ec2 = None
 
-        # this connection lets boto pick the default region.  be sure to use
-        # set_region() if you need a specific region.
-        self.ec2 = boto.connect_ec2(self.access_key_id, self.secret_key)
+    @property
+    def ec2(self):
+        if not self._ec2:
+            # this connection lets boto pick the default region.  be sure to use
+            # set_region() if you need a specific region.
+            self._ec2 = boto.connect_ec2(self.access_key_id, self.secret_key)
+        return self._ec2
 
     def set_region(self, region_name):
         log.debug("Setting region to %s" % region_name)
-        self.ec2 = boto.ec2.connect_to_region(
+        self._ec2 = boto.ec2.connect_to_region(
                 region_name,
                 aws_access_key_id=self.access_key_id,
                 aws_secret_access_key=self.secret_key,
