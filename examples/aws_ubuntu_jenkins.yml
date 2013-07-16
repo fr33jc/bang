@@ -1,0 +1,16 @@
+name: jenkins
+version: 0.1
+playbooks:
+- jenkins/deploy.yml
+
+servers:
+  jenkins:
+    groups:
+    - master
+    provider: aws
+    instance_type: m1.small
+    region_name: us-west-2
+    availability_zone: us-west-2c
+    ssh_key_name: default
+    # ubuntu 12.04 LTS
+    disk_image_id: ami-5168f861
