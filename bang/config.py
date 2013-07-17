@@ -27,7 +27,7 @@ from .util import log, bump_version_tail, deep_merge_dicts
 DEFAULT_CONFIG_DIR = 'bang-stacks'
 DEFAULT_LAUNCH_TIMEOUT_S = 0
 
-RC_KEYS = [A.DEPLOYER_CREDS, 'config_dir']
+RC_KEYS = [A.DEPLOYER_CREDS, 'config_dir', A.NAME_TAG_NAME]
 ALL_RESERVED_KEYS = RC_KEYS + R.DYNAMIC_RESOURCE_KEYS
 
 
@@ -250,10 +250,15 @@ class Config(dict):
 
     def _prepare_tags(self):
         # add ``stack`` and ``role`` tags
+        name_tag_name = self.get(A.NAME_TAG_NAME, 'Name')
         for s in self.get(R.SERVERS, []):
+            stack = self[A.NAME]
+            role = s[A.server.NAME]
             tags = s.get(A.server.TAGS, {})
-            tags[A.tags.STACK] = self[A.NAME]
-            tags[A.tags.ROLE] = s[A.server.NAME]
+            tags[A.tags.STACK] = stack
+            tags[A.tags.ROLE] = role
+            if name_tag_name:
+                tags[name_tag_name] = '%s-%s' % (stack, role)
             s[A.server.TAGS] = tags
 
     def _prepare_ssh_keys(self):

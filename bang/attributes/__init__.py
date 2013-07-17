@@ -31,3 +31,26 @@ DEPLOYER_CREDS = 'deployer_credentials'
 KEY = 'key'
 SERVER_CLASS = 'server_class'
 PROVIDER = 'provider'
+
+# Like chicken fried chicken... this is a way to configure the name of the tag
+# in which the combined stack-role (a.k.a. *name*) will be stored.  By default,
+# unless this is specified directly in ~/.bangrc, the *name* value will be
+# assigned to a tag named "Name" (this is the default tag displayed in the AWS
+# management console).  I.e. using Bang defaults, the server named "bar" in the
+# stack named "foo" will have the following tags:
+#
+#     stack:  foo
+#     role:   bar
+#     Name:   foo-bar
+#
+# In some cases, admins may have other purposes for the "Name" tag.  If
+# ~/.bangrc were to have ``name_tag_name`` set to ``descriptor``, then the
+# server described above would have the following tags:
+#
+#     stack:       foo
+#     role:        bar
+#     descriptor:  foo-bar
+#
+# To prevent Bang from assigning the *name* value to a tag, assign an empty
+# string to the ``name_tag_name`` attribute in ~/.bangrc.
+NAME_TAG_NAME = 'name_tag_name'
