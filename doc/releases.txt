@@ -2,6 +2,16 @@ Release Summary
 ===============
 
 
+0.9 - July 16, 2013
+-------------------
+- Update dependencies.  Now using:
+
+    - Ansible 1.2
+    - logutils >= 3.2
+
+- Fix #4:  Set value for "Name" tag on EC2 servers
+- Fix EC2 server provisioning
+
 0.8 - May 7, 2013
 -----------------
 - AWS provider
