@@ -66,7 +66,7 @@ class NovaSecGroup(object):
 
     The :attr:`rules` attribute is a specialized dict whose keys are the
     *normalized* rule definitions, and whose values are the *Nova-specific*
-    rule IDs.  E.g.
+    rule IDs.  E.g.::
 
         {
             ('tcp', 1, 65535, 'group-foo'): 400459,
