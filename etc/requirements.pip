@@ -63,7 +63,7 @@ python-reddwarfclient==0.1.2
 #     - Model-driven configuration management, multi-node deployment, and remote task execution system.
 #     - Homepage:  http://ansible.cc/
 #     - License:  GPLv3
-ansible==1.0
+ansible==1.2
 
 
 # TODO: remove these once upstream gets their act together
