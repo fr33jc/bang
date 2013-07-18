@@ -45,3 +45,42 @@ build-time dependencies from the Debian/Ubuntu package repos::
     sudo apt-get install build-essential python-dev libxml2-dev libxslt-dev
 
 Then install Bang as directed above.
+
+
+OpenStack
+~~~~~~~~~
+As much as possible, Bang uses official OpenStack client libraries to
+provision resources in OpenStack clouds.  Prior to Bang 0.10, this
+dependency was explicitly defined in the Bang package such that ``pip
+install bang`` would install the OpenStack client libraries as well.
+From Bang 0.10 onwards, OpenStack users will need to install the
+client libraries on their own.
+
+.. NOTE::  Problems with the client libraries include:
+
+       - Not having dependencies defined correctly in their packages
+       - Unnecessary dependency on native libraries like lxml
+
+   Bugs have been filed with upstream, but they have not been very
+   responsive to feedback from outside the OpenStack organization.
+
+The following commands should install the necessary dependencies::
+
+    sudo apt-get install build-essential python-dev libxml2-dev libxslt-dev
+    pip install \
+        python-novaclient==2.11.1
+        python-swiftclient==1.3.0
+        python-reddwarfclient==0.1.2
+        novaclient-auth-secretkey
+
+HP Cloud
+^^^^^^^^
+HP Cloud uses OpenStack as a base cloud operating system.  However,
+HP has its own proprietary extensions and modifications which have
+meaningful effects on the provisioning API.  Bang subclasses the
+appropriate OpenStack client library classes and adjusts behaviour
+for HP Cloud.  In addition to the OpenStack dependency installation
+listed above, the following commands will enable Bang to deploy
+databases to HP Cloud's beta DBaaS::
+
+    pip install PyMySQL==0.5
