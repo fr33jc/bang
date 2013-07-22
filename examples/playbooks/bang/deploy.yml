@@ -1,0 +1,13 @@
+- hosts: banger
+  user: ubuntu
+  sudo: yes
+  tasks:
+  - include: ../python/install-pip.yml
+  - name: install dependencies
+    apt: pkg=$item
+    with_items:
+    - python-paramiko
+  - name: install bang
+    pip: name=bang
+
+# vim: set sw=2 sts=2 ts=2 et:
