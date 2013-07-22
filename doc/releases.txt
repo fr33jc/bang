@@ -2,8 +2,8 @@ Release Summary
 ===============
 
 
-0.10 - July 22, 2013
---------------------
+0.10.1 - July 22, 2013
+----------------------
 - Remove install-time dependency on OpenStack client libraries.
   Users who need OpenStack/HP Cloud support must now install those
   libraries independently.  :ref:`Details... <openstack-deps>`
