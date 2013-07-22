@@ -43,11 +43,6 @@ General Features
   once.  Leave it up to the deployers to sort out inter-playbook
   dependencies.
 
-- Consider replacing python-reddwarf.  It would be nice to get rid of
-  the lxml dependency because it's such a chore to install especially
-  in virtualenvs.  Ideally, we would not require
-  compilers/``build-essential`` on the installation host.
-
 - Integrate with revision control system.
 
     - Autoincrement *stack version* in config file.

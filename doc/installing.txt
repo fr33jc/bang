@@ -47,6 +47,8 @@ build-time dependencies from the Debian/Ubuntu package repos::
 Then install Bang as directed above.
 
 
+.. _openstack-deps:
+
 OpenStack
 ~~~~~~~~~
 As much as possible, Bang uses official OpenStack client libraries to
