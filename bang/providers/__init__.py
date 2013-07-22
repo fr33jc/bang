@@ -14,14 +14,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with bang.  If not, see <http://www.gnu.org/licenses/>.
-from .hpcloud import HPCloud
 from .aws import AWS
 
-
 PROVIDER_MAP = {
-        'hpcloud': HPCloud,
         'aws': AWS,
         }
+
+try:
+    from .hpcloud import HPCloud
+    PROVIDER_MAP['hpcloud'] = HPCloud
+except ImportError:
+    pass
 
 # provider object cache:
 _PROVIDERS = {}
