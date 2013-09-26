@@ -39,7 +39,7 @@ def get_stage_deployers(keys, stack):
 
     """
     config = stack.config
-    creds = config['deployer_credentials']
+    creds = config[A.DEPLOYER_CREDS]
     deployers = []
     for res_type in keys:
         res_configs = config.get(res_type)
