@@ -134,7 +134,9 @@ class HPLoadBalancer():
     def match_lb_nodes(self, lb_id, existing_nodes, host_addresses, host_port):
         """
         Add and remove nodes to match the host addresses
-        and port given, based on existing_nodes
+        and port given, based on existing_nodes. HPCS doesn't
+        allow a load balancer with no backends, so we'll add
+        first, delete after.
 
         :param string lb_id: Load balancer id
 
@@ -152,10 +154,6 @@ class HPLoadBalancer():
         delete_node_ids = [n['id'] for n in delete_nodes]
         delete_node_hosts = [n['address'] for n in delete_nodes]
         
-        if delete_node_ids:
-            args = (lb_id, delete_node_ids)
-            self.remove_lb_nodes(*args)
-
         current_nodes = set([n['address'] for n in existing_nodes])
         current_nodes -= set(delete_node_hosts)
         add_nodes = host_addresses - current_nodes
@@ -167,6 +165,10 @@ class HPLoadBalancer():
             ]
             args = (lb_id, nodes_to_add)
             self.add_lb_nodes(*args)
+
+        if delete_node_ids:
+            args = (lb_id, delete_node_ids)
+            self.remove_lb_nodes(*args)
         
         log.info("Were %d nodes. Added %d nodes; deleted %d nodes" % 
                 (len(existing_nodes), len(add_nodes), len(delete_nodes)))
