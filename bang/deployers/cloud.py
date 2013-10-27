@@ -256,7 +256,7 @@ class DatabaseDeployer(BaseDeployer):
                 )
 
 
-class LoadBalancerDeployer(BaseDeployer):
+class LoadBalancerDeployer(RegionedDeployer):
     """
     Cloud-managed load balancer deployer. Assumes a consul able
     to create and discover LB instances, as well as match existing
@@ -269,6 +269,7 @@ class LoadBalancerDeployer(BaseDeployer):
       load_balancers:
         test_balancer:
           balance_server_name: server_defined_in_servers_section
+          region: region-1.geo-1
           provider: hpcloud
           backend_port: '8080'
           protocol: tcp

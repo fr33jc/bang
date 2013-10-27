@@ -19,13 +19,22 @@ class HPLoadBalancer():
         Provide a management URL (from the openstack service catalog)
         and auth token (which can be pinched from novaclient)
         """
-
-        lb_catalog = filter(lambda c: c['name'] == 'Load Balancer', 
-                                   hpcloud.os_catalog['access']['serviceCatalog'])
-        lb_management_url = lb_catalog[0]['endpoints'][0]['publicURL']
-
-        self.management_url = lb_management_url
         self.auth_token = hpcloud.os_auth_token
+        self.catalog = filter(lambda c: c['name'] == 'Load Balancer', 
+                              hpcloud.os_catalog['access']['serviceCatalog'])
+
+        self.management_url = None
+
+    def set_region(self, region_name):
+        region_lb = filter(lambda c: c['region'] == region_name,
+                                   self.catalog[0]['endpoints'])
+        if not region_lb:
+            available_regions = [c['region'] 
+                                 for c in self.catalog[0]['endpoints']]
+            raise Exception("No LB provider matching region %s (%s)" %
+                    (region_name, available_regions))
+        self.management_url = region_lb[0]['publicURL']
+
 
     def list_lbs(self):
         """
@@ -201,6 +210,8 @@ class HPLoadBalancer():
                 data={'condition': condition})
         
     def _request(self, method, url, data=None, **kwargs):
+        if not self.management_url:
+            raise Exception("Call set_region first")
         kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
         kwargs.setdefault('headers', {})['Content-Type'] = 'application/json'
         if data:
