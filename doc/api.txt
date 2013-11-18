@@ -10,6 +10,16 @@ API
     :undoc-members:
     :show-inheritance:
 
+
+:mod:`bang.attributes`
+----------------------
+
+.. automodule:: bang.attributes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`bang.config`
 ------------------
 
