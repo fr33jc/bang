@@ -31,7 +31,9 @@
 #
 
 VENV=virtualenv
-VENV_PY_URL=https://raw.github.com/pypa/virtualenv/master/virtualenv.py
+VENV_VERSION=1.10.1
+VENV_SYS_VERSION=`virtualenv --version`
+VENV_PY_URL=https://pypi.python.org/packages/source/v/virtualenv/virtualenv-${VENV_VERSION}.tar.gz
 
 here=$(cd $(dirname $0); /bin/pwd)
 venv_name=${1-BANG}
@@ -52,13 +54,16 @@ then
 else
     venv_args="--no-site-packages --distribute --prompt=($venv_name) $venv_dir"
 
-    if which $VENV &>/dev/null
+    if [ "${VENV_SYS_VERSION}" == "${VENV_VERSION}" ]
     then
         $VENV $venv_args || die "Could not create virtualenv"
     else
+        echo "Retrieving virtualenv"
         curl -Os $VENV_PY_URL || die "Could not download virtualenv"
-        python virtualenv.py $venv_args || die "Could not create virtualenv"
-        rm virtualenv.py* distribute-*.tar.gz
+        tar -xzf virtualenv-${VENV_VERSION}.tar.gz || die "Failed to extract virtualenv"
+        python virtualenv-${VENV_VERSION}/virtualenv.py $venv_args || die "Could not create virtualenv"
+        echo "Removing virtualenv"
+        rm -rf virtualenv-${VENV_VERSION} virtualenv-${VENV_VERSION}.tar.gz
     fi
 fi
 

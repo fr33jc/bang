@@ -19,13 +19,22 @@ class HPLoadBalancer():
         Provide a management URL (from the openstack service catalog)
         and auth token (which can be pinched from novaclient)
         """
-
-        lb_catalog = filter(lambda c: c['name'] == 'Load Balancer', 
-                                   hpcloud.os_catalog['access']['serviceCatalog'])
-        lb_management_url = lb_catalog[0]['endpoints'][0]['publicURL']
-
-        self.management_url = lb_management_url
         self.auth_token = hpcloud.os_auth_token
+        self.catalog = filter(lambda c: c['name'] == 'Load Balancer', 
+                              hpcloud.os_catalog['access']['serviceCatalog'])
+
+        self.management_url = None
+
+    def set_region(self, region_name):
+        region_lb = filter(lambda c: c['region'] == region_name,
+                                   self.catalog[0]['endpoints'])
+        if not region_lb:
+            available_regions = [c['region'] 
+                                 for c in self.catalog[0]['endpoints']]
+            raise Exception("No LB provider matching region %s (%s)" %
+                    (region_name, available_regions))
+        self.management_url = region_lb[0]['publicURL']
+
 
     def list_lbs(self):
         """
@@ -134,7 +143,9 @@ class HPLoadBalancer():
     def match_lb_nodes(self, lb_id, existing_nodes, host_addresses, host_port):
         """
         Add and remove nodes to match the host addresses
-        and port given, based on existing_nodes
+        and port given, based on existing_nodes. HPCS doesn't
+        allow a load balancer with no backends, so we'll add
+        first, delete after.
 
         :param string lb_id: Load balancer id
 
@@ -152,10 +163,6 @@ class HPLoadBalancer():
         delete_node_ids = [n['id'] for n in delete_nodes]
         delete_node_hosts = [n['address'] for n in delete_nodes]
         
-        if delete_node_ids:
-            args = (lb_id, delete_node_ids)
-            self.remove_lb_nodes(*args)
-
         current_nodes = set([n['address'] for n in existing_nodes])
         current_nodes -= set(delete_node_hosts)
         add_nodes = host_addresses - current_nodes
@@ -167,6 +174,10 @@ class HPLoadBalancer():
             ]
             args = (lb_id, nodes_to_add)
             self.add_lb_nodes(*args)
+
+        if delete_node_ids:
+            args = (lb_id, delete_node_ids)
+            self.remove_lb_nodes(*args)
         
         log.info("Were %d nodes. Added %d nodes; deleted %d nodes" % 
                 (len(existing_nodes), len(add_nodes), len(delete_nodes)))
@@ -199,6 +210,8 @@ class HPLoadBalancer():
                 data={'condition': condition})
         
     def _request(self, method, url, data=None, **kwargs):
+        if not self.management_url:
+            raise Exception("Call set_region first")
         kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
         kwargs.setdefault('headers', {})['Content-Type'] = 'application/json'
         if data:
