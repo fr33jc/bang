@@ -36,9 +36,30 @@ def server_to_dict(server):
     :class:`~bang.deployers.cloud.ServerDeployer` objects.
 
     """
+    def get_ips_for_server(server):
+        public_ips = []
+        private_ips = []
+        def address_is_public(address):
+            return address['OS-EXT-IPS:type'] == 'floating'
+        def address_is_private(address):
+            return not address_is_public(address)
+
+        for network, addresses in server.addresses.iteritems():
+            # TODO: is this right? Can have private floating ips
+            public = filter(address_is_public, addresses)
+            private = filter(address_is_private, addresses)
+            public_ips.extend(public)
+            private_ips.extend(private)
+        return private_ips, public_ips
+
     addresses = server.addresses
     pub = addresses.get('public', [])
     priv = addresses.get('private', [])
+
+    if not pub and not priv:
+        # Openstack 13.5?
+        priv, pub = get_ips_for_server(server)
+
     return {
             A.server.ID: server.id,
             A.server.PUBLIC_IPS: [a['addr'] for a in pub],
@@ -98,6 +119,7 @@ class NovaSecGroup(object):
 
 class Nova(Consul):
     """The consul for the OpenStack compute service."""
+
     def __init__(self, *args, **kwargs):
         super(Nova, self).__init__(*args, **kwargs)
         self.nova = self.provider.nova_client
@@ -105,12 +127,12 @@ class Nova(Consul):
     def set_region(self, region_name):
         client = self.nova.client
         management_url = client.service_catalog.url_for(
-                attr='region',
-                filter_value=region_name,
-                service_type=client.service_type,
-                )
+            attr='region',
+            filter_value=region_name,
+            service_type=client.service_type,
+            )
         client.set_management_url(management_url.rstrip('/'))
-
+   
     def find_ssh_pub_key(self, name):
         """
         Returns ``True`` if an SSH key named :attr:`name` is found.
@@ -162,8 +184,9 @@ class Nova(Consul):
         return servers
 
     def create_server(self, basename, disk_image_id, instance_type,
-            ssh_key_name, tags=None, availability_zone=None,
-            timeout_s=DEFAULT_TIMEOUT_S, **kwargs):
+            ssh_key_name, tags=None, availability_zone=None, 
+            timeout_s=DEFAULT_TIMEOUT_S, floating_ip=True,
+            **kwargs):
         """
         Creates a new server instance.  This call blocks until the server is
         created and available for normal use, or :attr:`timeout_s` has elapsed.
@@ -178,7 +201,7 @@ class Nova(Consul):
         :param str instance_type:  The name of an OpenStack instance type, or
             *flavor*.  This is specific to the OpenStack provider installation.
 
-        :param str ssh_key_name:  The name of the ssh key to inject into the
+       :param str ssh_key_name:  The name of the ssh key to inject into the
             target server's ``authorized_keys`` file.  The key must already
             have been registered with the OpenStack Nova provider.
 
@@ -193,6 +216,11 @@ class Nova(Consul):
             server before failing.  Defaults to ``0`` (i.e. Expect server to be
             active immediately).
 
+        :param bool floating_ip:  Allocate a floating IP (in
+            openstack 13.5 this doesn't happen automatically, so only
+            don't do it if you know what you're doing)
+
+ 
         :rtype:  :class:`dict`
 
         """
@@ -221,6 +249,13 @@ class Nova(Consul):
                     'Server %s failed to launch within allotted time.'
                     % server.id
                     )
+
+        if floating_ip:
+            log.info('Creating floating ip for %s', name)
+            floating_ip = nova.floating_ips.create()
+            server.add_floating_ip(floating_ip)
+            log.info('Created floating ip %s for %s', floating_ip.ip, name)
+
         return server_to_dict(instance)
 
     def find_secgroup(self, name):
