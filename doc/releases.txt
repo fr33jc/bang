@@ -2,6 +2,18 @@ Release Summary
 ===============
 
 
+0.11 - January 8, 2014
+----------------------
+- HP Cloud provider
+
+    - *BREAKING CHANGE*:  Separate HP Cloud v12 and v13 providers.  Users
+      of HP Cloud services must now distinguish between the 2 different
+      API versions of their resources.
+    - Add new LB nodes before removing old; fixes error caused by
+      HPCS' rule that a LB must have at least one node.
+
+- Allow load balancers to be region-specific.
+
 0.10.1 - July 22, 2013
 ----------------------
 - Remove install-time dependency on OpenStack client libraries.
