@@ -21,14 +21,27 @@ PROVIDER_MAP = {
         }
 
 try:
-    from .hpcloud import HPCloud
-    PROVIDER_MAP['hpcloud'] = HPCloud
+    from .hpcloud.v12 import HPCloudV12
+    PROVIDER_MAP['hpcloud_v12'] = HPCloudV12
 except ImportError:
     pass
 
+try:
+    # TODO: Make this default once v12 goes away
+    from .hpcloud import HPCloud
+    PROVIDER_MAP['hpcloud_v13'] = HPCloud
+except ImportError:
+    pass
+
+try:
+    from .openstack import OpenStack
+    PROVIDER_MAP['openstack'] = OpenStack
+except ImportError:
+    pass
+
+
 # provider object cache:
 _PROVIDERS = {}
-
 
 def get_provider(name, creds):
     """
@@ -48,6 +61,12 @@ def get_provider(name, creds):
     p = _PROVIDERS.get(name)
     if not p:
         provider = PROVIDER_MAP.get(name)
+        if not provider:
+            if name == 'hpcloud':
+                print "## Warning - 'hpcloud' is not currently supported as" \
+                    "a provider; use hpcloud_v12 or hpcloud_v13. See " \
+                    "release notes."
+            raise Exception("No provider matches %s; check imports" % name)
         p = provider(creds)
         _PROVIDERS[name] = p
     return p

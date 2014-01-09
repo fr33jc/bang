@@ -21,58 +21,9 @@ from ... import attributes as A, resources as R
 from ...util import log, poll_with_timeout
 from ..openstack import (OpenStack, Nova, RedDwarf,
         DEFAULT_STORAGE_SIZE_GB, DEFAULT_TIMEOUT_S, db_to_dict)
-from .nova_ext import DiabloVolumeManager
 from .reddwarf import HPDbaas
 from .load_balancer import HPLoadBalancer
 
-
-def fix_hp_addrs(server):
-    """
-    Works around hpcloud's peculiar "all ip addresses are returned as private
-    even though one is public" bug.  This is also what the official hpfog gem
-    does in the ``Fog::Compute::HP::Server#public_ip_address`` method.
-
-    :param dict server:  Contains the server ID, a list of public IP addresses,
-        and a list of private IP addresses.
-
-    """
-    fixed = {A.server.ID: server[A.server.ID]}
-    both = server.get(A.server.PRIVATE_IPS)
-    if both:
-        fixed[A.server.PUBLIC_IPS] = [both[1]]
-        fixed[A.server.PRIVATE_IPS] = [both[0]]
-    return fixed
-
-
-class HPNova(Nova):
-    def find_servers(self, *args, **kwargs):
-        """
-        Wraps :meth:`bang.providers.openstack.Nova.find_servers` to apply
-        hpcloud specialization, namely pulling IP addresses from the hpcloud's
-        non-standard return values.
-
-        """
-        servers = super(HPNova, self).find_servers(*args, **kwargs)
-        return map(fix_hp_addrs, servers)
-
-    def create_server(self, *args, **kwargs):
-        """
-        Wraps :meth:`bang.providers.openstack.Nova.create_server` to apply
-        hpcloud specialization, namely pulling IP addresses from the hpcloud's
-        non-standard return values.
-
-        """
-        # hpcloud's management console stuffs all of its tags in a "tags" tag.
-        # populate it with the stack and role values here only at server
-        # creation time.  what users do with it after server creation is up to
-        # them.
-        tags = kwargs['tags']
-        tags[A.tags.TAGS] = ','.join([
-                tags.get(A.tags.STACK, ''),
-                tags.get(A.tags.ROLE, ''),
-                ])
-        s = super(HPNova, self).create_server(*args, **kwargs)
-        return fix_hp_addrs(s)
 
 class HPRedDwarf(RedDwarf):
     def create_db(self, instance_name, instance_type,
@@ -160,10 +111,10 @@ class HPCloud(OpenStack):
     def __init__(self, *args, **kwargs):
         super(HPCloud, self).__init__(*args, **kwargs)
         cm = self.CONSUL_MAP
-        cm[R.SERVERS] = HPNova
+        cm[R.SERVERS] = Nova
         cm[R.DATABASES] = HPRedDwarf
         cm[R.LOAD_BALANCERS] = HPLoadBalancer
-        cm[R.DYNAMIC_LB_SEC_GROUPS] = HPNova
+        cm[R.DYNAMIC_LB_SEC_GROUPS] = Nova
 
     @property
     def load_balancer_client(self):
@@ -180,7 +131,6 @@ class HPCloud(OpenStack):
             kwargs['auth_system'] = 'secretkey'
 
         nc = NovaClient(*args, **kwargs)
-        nc.volumes = DiabloVolumeManager(nc)
         return nc
 
     def authenticate(self):
