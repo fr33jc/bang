@@ -63,6 +63,12 @@ Providers
     - Create ssh keypairs if specified by the user in their
       ~/.bangrc.
 
+- Docker/LXC
+
+    - Add Docker and LXC images as base images.
+    - Add Docker and LXC containers to Ansible inventories.
+    - Use Ansible playbooks to make changes within containers.
+
 - Rackspace
 - HP Cloud
 
