@@ -19,11 +19,13 @@ import json
 import multiprocessing
 import os.path
 
-from ansible.callbacks import (
-        AggregateStats,
-        PlaybookCallbacks,
-        PlaybookRunnerCallbacks,
-        )
+# work around circular import in ansible as discussed on ansible-devel:
+#
+#     https://groups.google.com/forum/#!topic/ansible-devel/wE7fNbGyWbo
+#
+import ansible.utils  # noqa
+
+from ansible import callbacks
 from ansible.playbook import PlayBook
 from .deployers import get_stage_deployers
 from .inventory import BangsibleInventory
@@ -261,9 +263,9 @@ class Stack(object):
             playbook_path = os.path.join(playbook_dir, playbook)
 
             # gratuitously stolen from main() in ``ansible-playbook``
-            stats = AggregateStats()
-            playbook_cb = PlaybookCallbacks(verbose=1)
-            runner_cb = PlaybookRunnerCallbacks(stats, verbose=1)
+            stats = callbacks.AggregateStats()
+            playbook_cb = callbacks.PlaybookCallbacks(verbose=1)
+            runner_cb = callbacks.PlaybookRunnerCallbacks(stats, verbose=1)
 
             extra_kwargs = {
                     'playbook': playbook_path,

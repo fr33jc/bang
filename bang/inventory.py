@@ -45,21 +45,7 @@ def get_ansible_groups(group_map):
 
 class BangsibleInventory(ansible.inventory.Inventory):
     def __init__(self, groups, hostvars):
-
-        # caching to avoid repeated calculations, particularly with external
-        # inventory scripts.
-        self._vars_per_group = {}
-        self._hosts_cache = {}
-        self._groups_list = {}
-
-        # a list of host(names) to contain current inquiries to
-        self._restriction = None
-        self._also_restriction = None
-        self._subset = None
-
-        # whether the inventory file is a script
-        self._is_script = False
-
+        super(BangsibleInventory, self).__init__(None)
         self.groups = get_ansible_groups(groups)
 
         # Prepopulate the cache.  The base Inventory only gathers host vars as

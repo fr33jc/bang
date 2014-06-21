@@ -32,6 +32,6 @@ boto>=2.6.0
 
 # ansible
 #     - Model-driven configuration management, multi-node deployment, and remote task execution system.
-#     - Homepage:  http://ansible.cc/
+#     - Homepage:  http://www.ansible.com/
 #     - License:  GPLv3
-ansible==1.2
+ansible==1.6.3
