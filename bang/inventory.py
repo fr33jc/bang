@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with bang.  If not, see <http://www.gnu.org/licenses/>.
+from .util import deep_merge_dicts
 import ansible.inventory
 from ansible.inventory.group import Group
 from ansible.inventory.host import Host
@@ -53,7 +54,15 @@ class BangsibleInventory(ansible.inventory.Inventory):
         # caches them in ``self._vars_per_host``.  By the time bang needs a
         # BangsibleInventory, it already has all of the hostvars so we just set
         # the cache to be the hostvars dict.
-        self._vars_per_host = hostvars
+        self._bang_vars_per_host = hostvars
 
     def is_file(self):
         return False
+
+    def get_variables(self, hostname, vault_password=None):
+        hvars = super(BangsibleInventory, self).get_variables(
+                hostname,
+                vault_password,
+                )
+        deep_merge_dicts(hvars, self._bang_vars_per_host[hostname])
+        return hvars

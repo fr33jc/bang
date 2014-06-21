@@ -259,6 +259,8 @@ class Stack(object):
         if ssh_user:
             pb_kwargs['remote_user'] = ssh_user
 
+        # DEBUG: this is like passing ``-vvvv`` to ansible-playbook
+        # ansible.utils.VERBOSITY = 4
         for playbook in cfg.get(A.PLAYBOOKS, []):
             playbook_path = os.path.join(playbook_dir, playbook)
 
@@ -282,10 +284,12 @@ class Stack(object):
                     }
             pb_kwargs.update(extra_kwargs)
             pb = PlayBook(**pb_kwargs)
-            pb.inventory = BangsibleInventory(
+            inventory = BangsibleInventory(
                     copy.deepcopy(self.groups_and_vars.lists),
                     copy.deepcopy(self.groups_and_vars.dicts),
                     )
+            inventory.set_playbook_basedir(playbook_dir)
+            pb.inventory = inventory
 
             pb.run()
 
