@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 #
-# This is an example configuration file for Bang.
+# This is an example stack configuration file for Bang.
 #
 # It provisions a server in AWS and installs Bang on it.
 #
