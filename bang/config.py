@@ -53,6 +53,16 @@ def find_component_tarball(bucket, comp_name, comp_config):
     return True
 
 
+def read_raw_bangrc():
+    bangrc_path = os.path.join(os.environ['HOME'], '.bangrc')
+    try:
+        with open(bangrc_path) as f:
+            return yaml.load(f)
+    except IOError:
+        pass
+    return {}
+
+
 def parse_bangrc():
     """
     Parses ``$HOME/.bangrc`` for global settings and deployer credentials.  The
@@ -69,14 +79,8 @@ def parse_bangrc():
     :rtype:  :class:`dict`
 
     """
-    bangrc_path = os.path.join(os.environ['HOME'], '.bangrc')
-    try:
-        with open(bangrc_path) as f:
-            raw = yaml.load(f)
-        return dict((k, raw[k]) for k in raw if k in RC_KEYS)
-    except IOError:
-        pass
-    return {}
+    raw = read_raw_bangrc()
+    return dict((k, raw[k]) for k in raw if k in RC_KEYS)
 
 
 def resolve_config_spec(config_spec, config_dir=''):
@@ -188,7 +192,7 @@ class Config(dict):
         for lb in self.get(R.LOAD_BALANCERS, []):
             for_servers = lb[A.loadbalancer.SERVER_NAMES]
             for_server = filter(
-                    lambda s: s[A.server.NAME] == for_servers, 
+                    lambda s: s[A.server.NAME] == for_servers,
                     self[R.SERVERS])[0]
             secgroup_name = '%s-secgroup' % lb[A.loadbalancer.NAME]
             sec_group = {
@@ -226,7 +230,7 @@ class Config(dict):
                 r[A.secgroup.TARGET] = dressy_name
                 rules.append(r)
 
-            # For load balancer SGs, don't add rule sets now; 
+            # For load balancer SGs, don't add rule sets now;
             # it'll get done later
             if not sg.get('load_balancer', None):
                 sg_rule_sets.append(
@@ -340,7 +344,7 @@ class Config(dict):
     def _convert_to_list(self, stanza_key, name_key):
         """
         Convert self[stanza_key] to a list. For each k, v
-        k, v = self[stanza_key].iteritems() assign 
+        k, v = self[stanza_key].iteritems() assign
         v[name_key] = k
         """
         converted_list = []
@@ -377,7 +381,7 @@ class Config(dict):
         # TODO: take server_common_attributes and disperse it among the various
         # server stanzas
 
-        # First stage - turn all the dicts (SERVER, SECGROUP, DATABASE, LOADBAL) 
+        # First stage - turn all the dicts (SERVER, SECGROUP, DATABASE, LOADBAL)
         # into lists now they're merged properly
         for stanza_key, name_key in (
                 (R.SERVERS, A.server.NAME),
