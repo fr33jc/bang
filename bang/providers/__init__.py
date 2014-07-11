@@ -20,28 +20,23 @@ PROVIDER_MAP = {
         'aws': AWS,
         }
 
-try:
-    from .hpcloud.v12 import HPCloudV12
-    PROVIDER_MAP['hpcloud_v12'] = HPCloudV12
-except ImportError:
-    pass
+_POSSIBLE_PROVIDERS = (
+        ('hpcloud_v12', 'hpcloud.v12', 'HPCloudV12'),
+        ('hpcloud_v13', 'hpcloud', 'HPCloud'),
+        ('openstack', 'openstack', 'OpenStack'),
+        )
 
-try:
-    # TODO: Make this default once v12 goes away
-    from .hpcloud import HPCloud
-    PROVIDER_MAP['hpcloud_v13'] = HPCloud
-except ImportError:
-    pass
-
-try:
-    from .openstack import OpenStack
-    PROVIDER_MAP['openstack'] = OpenStack
-except ImportError:
-    pass
+for key, mod_name, provider in _POSSIBLE_PROVIDERS:
+    try:
+        _mod = __import__(mod_name, fromlist=[provider], level=1)
+        PROVIDER_MAP[key] = getattr(_mod, provider)
+    except ImportError:
+        pass
 
 
 # provider object cache:
 _PROVIDERS = {}
+
 
 def get_provider(name, creds):
     """
