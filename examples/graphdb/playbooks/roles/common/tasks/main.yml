@@ -1,0 +1,14 @@
+- name: ensure contrib packages are available
+  apt_repository: repo='deb http://cloudfront.debian.net/debian wheezy contrib'
+
+- name: ensure basic packages are installed
+  apt: name={{ item }} state=present
+  with_items:
+  - ntp
+  - unzip
+
+- name: ensure ntp service is up and running
+  service: name=ntp state=running enabled=yes
+
+- name: ensure incoming dir exists for vendor installers/archives
+  file: path={{ incoming_dir }} state=directory

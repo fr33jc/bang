@@ -1,0 +1,18 @@
+# Creates a t1.micro in EC2 and deploys a Titan graph database server
+name: graphdb
+
+version: 0.1
+
+playbooks:
+- site.yml
+
+servers:
+  grapher:
+    groups:
+    - graphservers
+    provider: aws
+    region_name: us-west-2
+    availability_zone: us-west-2b
+    instance_type: t1.micro
+    disk_image_id: ami-bf1e688f  # debian wheezy 64-bit (2014-04-26)
+    config_scopes: []

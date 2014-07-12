@@ -1,0 +1,2 @@
+incoming_dir: /opt/incoming
+ssh_user: admin

@@ -1,0 +1,11 @@
+titan:
+  base_url: http://s3.thinkaurelius.com/downloads/titan
+  zip_name: "titan-server-{{ titan_version }}.zip"
+  vendor_dir: /opt/titan
+  extracted_flag: /opt/titan/{{ titan_version }}.extracted
+  cassandra:
+    max_heap_size: 256M
+    heap_newsize: 128M
+  rexster:
+    max_heap_size: 256M
+    heap_newsize: 128M

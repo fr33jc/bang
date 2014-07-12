@@ -1,0 +1,10 @@
+- hosts: graphservers
+  sudo: yes
+  user: "{{ ssh_user }}"
+  vars:
+    titan_version: 0.4.4
+    titan_checksum: 46703d315aa6ca0602b022fadca3846a58ba69bb490acb210bedd5be3bf12ef5
+
+  roles:
+  - common
+  - titan

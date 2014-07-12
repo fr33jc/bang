@@ -1,0 +1,33 @@
+- name: ensure titan user exists
+  user: name=titan
+
+- name: ensure java7 is installed
+  apt: name=openjdk-7-jdk state=present
+
+- name: download the titan tarball
+  get_url: url={{ titan.base_url }}/{{ titan.zip_name }} dest={{ incoming_dir }}/{{ titan.zip_name }} sha256sum={{ titan_checksum }} force=no
+  tags: titan
+
+- name: ensure titan vendor dir exists
+  file: path={{ titan.vendor_dir }} state=directory
+
+- name: install titan
+  unarchive: src={{ incoming_dir }}/{{ titan.zip_name }} dest={{ titan.vendor_dir }} copy=no creates={{ titan.extracted_flag }}
+  register: unzip_result
+
+- name: flag successful install
+  file: path={{ titan.extracted_flag }} state=touch
+  when: unzip_result|changed
+
+- name: configure cassandra
+  template: src=cassandra-env.sh.j2 dest={{ titan.vendor_dir }}/titan-server-{{ titan_version }}/conf/cassandra-env.sh
+
+- name: configure rexster
+  template: src=rexster.sh.j2 dest={{ titan.vendor_dir }}/titan-server-{{ titan_version }}/bin/rexster.sh
+
+- name: ensure titan user has access to all of its files
+  file: path={{ titan.vendor_dir }} owner=titan recurse=yes
+
+- name: ensure titan is started
+  command: ./titan.sh start chdir={{ titan.vendor_dir }}/titan-server-{{ titan_version }}/bin
+  sudo_user: titan
