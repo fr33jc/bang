@@ -166,12 +166,11 @@ class EC2(Consul):
         :param str disk_image_id:  The identifier of the base disk image to use
             as the rootfs.
 
-        :param str instance_type:  The name of an OpenStack instance type, or
-            *flavor*.  This is specific to the OpenStack provider installation.
+        :param str instance_type:  The name of an EC2 instance type.
 
         :param str ssh_key_name:  The name of the ssh key to inject into the
             target server's ``authorized_keys`` file.  The key must already
-            have been registered with the OpenStack Nova provider.
+            have been registered in the target EC2 region.
 
         :param tags:  Up to 5 key-value pairs of arbitrary strings to use as
             *tags* for the server instance.
