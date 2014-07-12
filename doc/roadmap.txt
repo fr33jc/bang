@@ -9,6 +9,9 @@ so they won't be forgotten along the way.
 
 General Features
 ----------------
+- Allow overriding path to .bangrc via environment variable.  This
+  allows external utilities to manage multiple sets of
+  deployer_credentials (e.g. a bangrc per client).
 - Add extension/plugin mechanism.  At the moment, the mercurial-style
   (i.e. using an rc-file for registering extensions) is the most
   palatable because it does *not* demand using setuptools, and
@@ -62,6 +65,7 @@ Providers
       public cloud providers.  E.g. SQS, ELB, SNS, etc...
     - Create ssh keypairs if specified by the user in their
       ~/.bangrc.
+    - Add DNS updates via Route53 API.
 
 - Docker/LXC
 
@@ -73,3 +77,8 @@ Providers
 - HP Cloud
 
     - DB Security Groups
+
+- RightScale
+
+    - Add this as a new provider and enable mixed RightScale+AWS
+      stacks.
