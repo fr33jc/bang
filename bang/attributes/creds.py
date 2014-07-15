@@ -22,3 +22,7 @@ REGION = 'region_name'
 AUTH_URL = 'auth_url'
 SSH_USER = 'ssh_user'
 SSH_PASS = 'ssh_pass'
+
+# rightscale auth
+API_ENDPOINT = 'api_endpoint'
+REFRESH_TOKEN = 'refresh_token'

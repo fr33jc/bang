@@ -21,14 +21,15 @@ PROVIDER_MAP = {
         }
 
 _POSSIBLE_PROVIDERS = (
-        ('hpcloud_v12', 'hpcloud.v12', 'HPCloudV12'),
-        ('hpcloud_v13', 'hpcloud', 'HPCloud'),
-        ('openstack', 'openstack', 'OpenStack'),
+        ('hpcloud_v12', 'bang.providers.hpcloud.v12', 'HPCloudV12'),
+        ('hpcloud_v13', 'bang.providers.hpcloud', 'HPCloud'),
+        ('openstack', 'bang.providers.openstack', 'OpenStack'),
+        ('rightscale', 'bang.providers.rs', 'RightScale'),
         )
 
 for key, mod_name, provider in _POSSIBLE_PROVIDERS:
     try:
-        _mod = __import__(mod_name, fromlist=[provider], level=1)
+        _mod = __import__(mod_name, fromlist=[provider], level=0)
         PROVIDER_MAP[key] = getattr(_mod, provider)
     except ImportError:
         pass
