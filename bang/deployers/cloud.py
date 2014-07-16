@@ -316,14 +316,16 @@ class LoadBalancerDeployer(RegionedDeployer):
     def configure_nodes(self):
         """Ensure that the LB's nodes matches the stack"""
         # Since load balancing runs after server provisioning,
-        # the servers should already be created regardless of 
+        # the servers should already be created regardless of
         # whether this was a preexisting load balancer or not.
         # We also have the existing nodes, because add_to_inventory
         # has been called already
         required_nodes = self._get_required_nodes()
 
-        log.debug("Matching existing lb nodes to required %s (port %s)" %
-               (", ".join(required_nodes), self.backend_port))
+        log.debug(
+                "Matching existing lb nodes to required %s (port %s)"
+                % (", ".join(required_nodes), self.backend_port)
+                )
 
         self.consul.match_lb_nodes(
             self.lb_attrs[A.loadbalancer.ID],
@@ -331,7 +333,9 @@ class LoadBalancerDeployer(RegionedDeployer):
             required_nodes,
             self.backend_port)
 
-        self.lb_attrs = self.consul.lb_details(self.lb_attrs[A.loadbalancer.ID]) 
+        self.lb_attrs = self.consul.lb_details(
+                self.lb_attrs[A.loadbalancer.ID]
+                )
 
     def _get_required_nodes(self):
         required_nodes = set()
@@ -340,11 +344,12 @@ class LoadBalancerDeployer(RegionedDeployer):
                 required_nodes.add(host)
         return required_nodes
 
-
     def add_to_inventory(self):
         """Adds lb IPs to stack inventory"""
         if self.lb_attrs:
-            self.lb_attrs = self.consul.lb_details(self.lb_attrs[A.loadbalancer.ID])
+            self.lb_attrs = self.consul.lb_details(
+                    self.lb_attrs[A.loadbalancer.ID]
+                    )
             host = self.lb_attrs['virtualIps'][0]['address']
             self.stack.add_lb_secgroup(self.name, [host], self.backend_port)
             self.stack.add_host(
@@ -353,9 +358,11 @@ class LoadBalancerDeployer(RegionedDeployer):
                     self.lb_attrs
                     )
 
+
 class LoadBalancerSecurityGroupsDeployer(SecurityGroupRulesetDeployer):
     def __init__(self, *args, **kwargs):
-        super(LoadBalancerSecurityGroupsDeployer, self).__init__(*args, **kwargs)
+        super(LoadBalancerSecurityGroupsDeployer, self).__init__(
+                *args, **kwargs)
         self.group = None
         self.attrs = {}
 
@@ -363,10 +370,12 @@ class LoadBalancerSecurityGroupsDeployer(SecurityGroupRulesetDeployer):
         # Prepopulate rules from the LB stack variables
         lb_entry = self.stack.lb_sec_groups.dicts.get(self.load_balancer)
         if not lb_entry:
-            raise Exception, \
-                "No load balancer host found in stack for '%s'" % self.load_balancer
+            raise Exception(
+                "No load balancer host found in stack for '%s'"
+                % self.load_balancer
+                )
         for host in lb_entry['hosts']:
-            # Create a rule for this LB. Need a mask or nova interprets it 
+            # Create a rule for this LB. Need a mask or nova interprets it
             # as a group rule rather than IP rule
             host = host + "/32"
             rule = {
@@ -374,7 +383,7 @@ class LoadBalancerSecurityGroupsDeployer(SecurityGroupRulesetDeployer):
                     A.secgroup.FROM: lb_entry['port'],
                     A.secgroup.TO: lb_entry['port'],
                     A.secgroup.SOURCE: host,
-                   }       
+                   }
             self.rules.append(rule)
 
         super(LoadBalancerSecurityGroupsDeployer, self).find_existing()
