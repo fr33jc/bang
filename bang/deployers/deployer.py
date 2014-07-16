@@ -25,6 +25,12 @@ class Deployer(object):
         self.stack = stack
         self.phases = []
         self.inventory_phases = []
+
+        # TODO: in retrospect, embedding config vals as attributes of Deployer
+        # objects is not as flexible as i intended.  consider just storing it
+        # as self.config.  should allow ServerDeployer.create() to handle
+        # variations in provider's create_server() details without needing
+        # things like CloudManagerServerDeployer.
         for k, v in config.iteritems():
             if '-' in k or ' ' in k:
                 raise BangError(

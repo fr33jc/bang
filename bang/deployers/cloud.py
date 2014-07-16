@@ -122,6 +122,56 @@ class ServerDeployer(RegionedDeployer):
             self.stack.add_host(addy, self.groups, self.hostvars)
 
 
+class CloudManagerServerDeployer(ServerDeployer):
+    """
+    Server deployer for cloud management services.
+
+    Cloud management services like RightScale and Scalr provide constructs like
+    server templates (a.k.a. roles) to bundle together disk image ids with
+    on-server configuration automation (e.g. RightScripts, Scalr scripts).
+    This deployer replaces the low-level provisioning functionality in the base
+    :class:`ServerDeployer` with a :meth:`create` method that is more suited to
+    the high-level launching mechanism provided by cloud management services.
+    """
+    def __init__(self, *args, **kwargs):
+        super(CloudManagerServerDeployer, self).__init__(*args, **kwargs)
+        self.server_def = None
+        self.phases = [
+                (True, self.find_existing),
+                (lambda: not self.server_attrs, self.find_def),
+                (lambda: not (self.server_attrs or self.server_def),
+                    self.define),
+                (lambda: not self.server_attrs, self.create),
+                (True, self.add_to_inventory),
+                ]
+
+    def find_def(self):
+        self.server_def = self.consul.find_server_def(self.name)
+
+    def define(self):
+        """Defines a new server."""
+        self.server_def = self.consul.define_server(
+                self.name,
+                self.server_tpl,
+                self.server_tpl_rev,
+                self.instance_type,
+                self.ssh_key_name,
+                tags=self.tags,
+                availability_zone=self.availability_zone,
+                security_groups=self.security_groups,
+                )
+        log.debug('Defined server ^%s^' % self.server_def)
+
+    def create(self):
+        self.server_attrs = self.consul.create_server(
+                self.server_def,
+                self.inputs,
+                timeout_s=self.launch_timeout_s,
+                )
+        log.debug('Post launch delay: %d s' % self.post_launch_delay_s)
+        time.sleep(self.post_launch_delay_s)
+
+
 class SecurityGroupDeployer(RegionedDeployer):
     def __init__(self, *args, **kwargs):
         super(SecurityGroupDeployer, self).__init__(*args, **kwargs)
@@ -388,7 +438,7 @@ class LoadBalancerSecurityGroupsDeployer(SecurityGroupRulesetDeployer):
 
         super(LoadBalancerSecurityGroupsDeployer, self).find_existing()
 
-DEPLOYER_MAP = {
+DEFAULT_DEPLOYER_MAP = {
         R.SSH_KEYS: SSHKeyDeployer,
         R.SERVERS: ServerDeployer,
         R.SERVER_SECURITY_GROUPS: SecurityGroupDeployer,
@@ -399,6 +449,19 @@ DEPLOYER_MAP = {
         R.DYNAMIC_LB_SEC_GROUPS: LoadBalancerSecurityGroupsDeployer,
         }
 
+CLOUD_MANAGER_DEPLOYER_OVERRIDES = {
+        'rightscale': {
+            R.SERVERS: CloudManagerServerDeployer,
+            },
+        }
+
+
+def get_deployer(provider, res_type):
+    deployer = CLOUD_MANAGER_DEPLOYER_OVERRIDES.get(provider, {}).get(res_type)
+    if not deployer:
+        deployer = DEFAULT_DEPLOYER_MAP[res_type]
+    return deployer
+
 
 def get_deployers(res_config, res_type, stack, creds):
     pname = res_config[A.PROVIDER]
@@ -407,6 +470,6 @@ def get_deployers(res_config, res_type, stack, creds):
     if not consul:
         log.warn("%s does not provide %s" % (pname, res_type))
         return
-    deployer = DEPLOYER_MAP[res_type]
+    deployer = get_deployer(pname, res_type)
     count = res_config.get('instance_count', 1)
     return [deployer(stack, res_config, consul) for _ in range(count)]
