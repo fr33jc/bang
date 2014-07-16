@@ -27,7 +27,7 @@ from .util import log, bump_version_tail, deep_merge_dicts
 DEFAULT_CONFIG_DIR = 'bang-stacks'
 DEFAULT_LAUNCH_TIMEOUT_S = 0
 
-RC_KEYS = [A.DEPLOYER_CREDS, 'config_dir', A.NAME_TAG_NAME]
+RC_KEYS = [A.DEPLOYER_CREDS, 'config_dir', A.NAME_TAG_NAME, A.LOGGING]
 ALL_RESERVED_KEYS = RC_KEYS + R.DYNAMIC_RESOURCE_KEYS
 
 
