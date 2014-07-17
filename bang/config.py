@@ -444,12 +444,13 @@ class Config(dict):
         temp_fd, temp_name = tempfile.mkstemp(
                 dir=os.path.dirname(config_path),
                 )
-        with open(config_path) as old, os.fdopen(temp_fd, 'w') as new:
-            for oldline in old:
-                if oldline.startswith('version:'):
-                    new.write("version: '%s'\n" % newver)
-                    continue
-                new.write(oldline)
+        with open(config_path) as old:
+            with os.fdopen(temp_fd, 'w') as new:
+                for oldline in old:
+                    if oldline.startswith('version:'):
+                        new.write("version: '%s'\n" % newver)
+                        continue
+                    new.write(oldline)
 
         # no need to backup the old file, it's under version control anyway -
         # right???
