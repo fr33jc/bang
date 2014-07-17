@@ -40,12 +40,33 @@ CONSOLE_LOGGING_FORMAT = '%(asctime)s %(levelname)8s %(processName)s - %(message
 # use the multiprocessing logger so when we start parallelizing the
 # deploys, we have a seamless transition.
 _mlog = multiprocessing.get_logger()
-log = _mlog.getChild('bang')
+log = _mlog.manager.getLogger('.'.join((_mlog.name, 'bang')))
+
+
+# this is stolen from python2.7 to have support in 2.6 - noqa
+class NullHandler(logging.Handler):
+    """
+    This handler does nothing. It's intended to be used to avoid the
+    "No handlers could be found for logger XXX" one-off warning. This is
+    important for library code, which may contain code to log events. If a user
+    of the library does not configure logging, the one-off warning might be
+    produced; to avoid this, the library developer simply needs to instantiate
+    a NullHandler and add it to the top-level logger of the library module or
+    package.
+    """
+    def handle(self, record):
+        pass
+
+    def emit(self, record):
+        pass
+
+    def createLock(self):
+        self.lock = None
 
 # give this logger at least one handler to avoid pesky warnings for bang
 # commands that don't actually care about logging
-_mlog.addHandler(logging.NullHandler())
-log.addHandler(logging.NullHandler())
+_mlog.addHandler(NullHandler())
+log.addHandler(NullHandler())
 del _mlog
 
 
