@@ -1,6 +1,7 @@
 import rightscale
 import time
 
+from requests import HTTPError
 from .. import TimeoutError, resources as R, attributes as A
 from ..util import log, poll_with_timeout
 from .bases import Provider, Consul
@@ -161,9 +162,14 @@ class Servers(Consul):
                 }
         # TODO: replace when python-rightscale no longer blows up due to empty
         # response body.
-        response = self.api.client.post('/api/servers', data=data)
-        if response.ok:
+        try:
+            response = self.api.client.post('/api/servers', data=data)
             return response.headers['location']
+        except HTTPError as e:
+            log.error(
+                    'Definition failed.  RightScale returned %d:\n%s'
+                    % (e.response.status_code, e.response.content)
+                    )
 
     def create_server(self, href, inputs, timeout_s=DEFAULT_TIMEOUT_S):
         log.info(
@@ -174,9 +180,14 @@ class Servers(Consul):
                 ('inputs[%s]' % k, 'text:%s' % v)
                 for k, v in inputs.iteritems()
                 ])
-        response = self.api.client.post(href + '/launch', data=data)
-        if not response.ok:
-            response.raise_for_status()
+        try:
+            response = self.api.client.post(href + '/launch', data=data)
+        except HTTPError as e:
+            log.error(
+                    'Creation failed.  RightScale returned %d:\n%s'
+                    % (e.response.status_code, e.response.content)
+                    )
+            raise
         instance_href = response.headers['location']
         res_id = instance_href.split('/')[-1]
 
