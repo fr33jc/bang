@@ -132,7 +132,7 @@ class Nova(Consul):
             service_type=client.service_type,
             )
         client.set_management_url(management_url.rstrip('/'))
-   
+
     def find_ssh_pub_key(self, name):
         """
         Returns ``True`` if an SSH key named :attr:`name` is found.
@@ -183,8 +183,11 @@ class Nova(Consul):
             servers.append(server_to_dict(s))
         return servers
 
+    def find_running(self, server_attrs, timeout_s):
+        return server_attrs
+
     def create_server(self, basename, disk_image_id, instance_type,
-            ssh_key_name, tags=None, availability_zone=None, 
+            ssh_key_name, tags=None, availability_zone=None,
             timeout_s=DEFAULT_TIMEOUT_S, floating_ip=True,
             **kwargs):
         """
@@ -220,7 +223,7 @@ class Nova(Consul):
             openstack 13.5 this doesn't happen automatically, so only
             don't do it if you know what you're doing)
 
- 
+
         :rtype:  :class:`dict`
 
         """

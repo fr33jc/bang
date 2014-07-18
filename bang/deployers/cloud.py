@@ -72,6 +72,7 @@ class ServerDeployer(RegionedDeployer):
         self.server_attrs = None
         self.phases = [
                 (True, self.find_existing),
+                (lambda: self.server_attrs, self.wait_for_running),
                 (lambda: not self.server_attrs, self.create),
                 (True, self.add_to_inventory),
                 ]
@@ -98,6 +99,13 @@ class ServerDeployer(RegionedDeployer):
             if len(self.namespace.names) >= maxnames:
                 break
             instances.append(i)
+
+    def wait_for_running(self):
+        """Waits for found servers to be operational"""
+        self.server_attrs = self.consul.find_running(
+                self.server_attrs,
+                self.launch_timeout_s,
+                )
 
     def create(self):
         """Launches a new server instance."""
@@ -138,6 +146,7 @@ class CloudManagerServerDeployer(ServerDeployer):
         self.server_def = None
         self.phases = [
                 (True, self.find_existing),
+                (lambda: self.server_attrs, self.wait_for_running),
                 (lambda: not self.server_attrs, self.find_def),
                 (lambda: not (self.server_attrs or self.server_def),
                     self.define),
@@ -146,7 +155,17 @@ class CloudManagerServerDeployer(ServerDeployer):
                 ]
 
     def find_def(self):
-        self.server_def = self.consul.find_server_def(self.name)
+        server_defs = self.consul.find_server_defs(self.name)
+        maxnames = len(server_defs)
+        while server_defs:
+            href = server_defs.pop(0)
+            if self.namespace.add_if_unique(href):
+                log.info('Found existing server def, %s' % href)
+                self.server_def = href
+                break
+            if len(self.namespace.names) >= maxnames:
+                break
+            server_defs.append(href)
 
     def define(self):
         """Defines a new server."""

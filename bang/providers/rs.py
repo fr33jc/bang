@@ -58,7 +58,13 @@ class Servers(Consul):
         name = tags[A.tags.ROLE]
         filters = ['name==%s' % name]
         if running:
-            filters.append('state==operational')
+            filters.extend([
+                'state<>decommisioning',
+                'state<>terminating',
+                'state<>terminated',
+                'state<>stopping',
+                'state<>inactive',
+                ])
         self.deployment = find_exact(
                 self.api.deployments,
                 name=tags[A.STACK],
@@ -67,6 +73,20 @@ class Servers(Consul):
         params = {'filter[]': filters}
         instances = self.cloud.instances.index(params=params)
         return [server_to_dict(i) for i in instances if i.soul['name'] == name]
+
+    def find_running(self, server_attrs, timeout_s):
+        href = server_attrs[A.server.ID]
+        res_id = href.split('/')[-1]
+
+        def find_running_instance():
+            instance = self.cloud.instances.show(res_id=res_id)
+            if instance.soul['state'] == 'operational':
+                return instance
+
+        running = poll_with_timeout(timeout_s, find_running_instance, 20)
+        if not running:
+            raise TimeoutError('Server not operational within allotted time.')
+        return server_to_dict(running)
 
     def set_region(self, region_name):
         self.region_name = region_name
@@ -80,14 +100,26 @@ class Servers(Consul):
                     )
         return self._cloud
 
-    def find_server_def(self, basename):
-        found = find_exact(
-                self.deployment.servers,
-                name=basename,
-                )
-        self.basename = basename
-        if found:
-            return found.href
+    def find_server_defs(self, basename):
+        """
+        Finds *usable* server definitions by name.
+
+        A server definition is *usable* if it doesn't have a current instance.
+
+        NOTE: This might result in extra server definitions if some servers are
+        in various non-operational states (e.g. terminating).
+        """
+        filters = ['name==%s' % basename]
+        fuzzy = self.deployment.servers.index(params={'filter[]': filters})
+        matches = []
+        for f in fuzzy:
+            if basename != f.soul['name']:
+                continue
+            if 'current_instance' not in f.links:
+                matches.append(f.href)
+        if matches:
+            self.basename = basename
+        return matches
 
     def define_server(
             self, basename, server_tpl, server_tpl_rev, instance_type,
@@ -183,10 +215,11 @@ class Servers(Consul):
         try:
             response = self.api.client.post(href + '/launch', data=data)
         except HTTPError as e:
-            log.error(
-                    'Creation failed.  RightScale returned %d:\n%s'
-                    % (e.response.status_code, e.response.content)
-                    )
+            log.error('Creation of %s failed.  RightScale returned %d:\n%s' % (
+                    href,
+                    e.response.status_code,
+                    e.response.content,
+                    ))
             raise
         instance_href = response.headers['location']
         res_id = instance_href.split('/')[-1]

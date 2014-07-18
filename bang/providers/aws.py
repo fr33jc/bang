@@ -152,6 +152,9 @@ class EC2(Consul):
         log.debug('instances: %s' % instances)
         return instances
 
+    def find_running(self, server_attrs, timeout_s):
+        return server_attrs
+
     def create_server(self, basename, disk_image_id, instance_type,
             ssh_key_name, tags=None, availability_zone=None,
             timeout_s=DEFAULT_TIMEOUT_S, **kwargs):
