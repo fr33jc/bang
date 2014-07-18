@@ -52,6 +52,25 @@ class Servers(Consul):
         self._cloud = None
         self.deployment = None
 
+    def create_stack(self, name):
+        """
+        Creates stack if necessary.
+        """
+        deployment = find_exact(self.api.deployments, name=name)
+        if not deployment:
+            try:
+                # TODO: replace when python-rightscale handles non-json
+                self.api.client.post(
+                        '/api/deployments',
+                        data={'deployment[name]': name},
+                        )
+            except HTTPError as e:
+                log.error(
+                        'Failed to create stack %s. '
+                        'RightScale returned %d:\n%s'
+                        % (name, e.response.status_code, e.response.content)
+                        )
+
     def find_servers(self, tags, running=True):
         # TODO: make stack and role be explicit args to find_servers instead of
         # {'stack': 'foo', 'role': 'bar'}

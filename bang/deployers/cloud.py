@@ -145,6 +145,7 @@ class CloudManagerServerDeployer(ServerDeployer):
         super(CloudManagerServerDeployer, self).__init__(*args, **kwargs)
         self.server_def = None
         self.phases = [
+                (True, self.create_stack),
                 (True, self.find_existing),
                 (lambda: self.server_attrs, self.wait_for_running),
                 (lambda: not self.server_attrs, self.find_def),
@@ -153,6 +154,9 @@ class CloudManagerServerDeployer(ServerDeployer):
                 (lambda: not self.server_attrs, self.create),
                 (True, self.add_to_inventory),
                 ]
+
+    def create_stack(self):
+        self.consul.create_stack(self.stack.name)
 
     def find_def(self):
         server_defs = self.consul.find_server_defs(self.name)
@@ -179,7 +183,7 @@ class CloudManagerServerDeployer(ServerDeployer):
                 availability_zone=self.availability_zone,
                 security_groups=self.security_groups,
                 )
-        log.debug('Defined server ^%s^' % self.server_def)
+        log.debug('Defined server %s' % self.server_def)
 
     def create(self):
         self.server_attrs = self.consul.create_server(
