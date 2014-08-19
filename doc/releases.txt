@@ -2,6 +2,26 @@ Release Summary
 ===============
 
 
+0.12 - August 19, 2014
+----------------------
+- Update to ansible >= 1.6.3.
+
+    - Allow ansible vars plugins to work.
+
+- Add RightScale provider.
+
+    - Add server creation and launch support.
+    - Expose underlying RightScale response for errors.
+    - Implement ``create_stack()`` to create RightScale
+      *deployments*.
+
+- Reuse existing servers *if possible*.  Some scenarios allow a
+  server instance to be found and usable as a deployment target (e.g.
+  bang run failed but server instance launched successfully).
+- Allow configuration of logging via ~/.bangrc.
+- Add backwards support for python 2.6.
+- Reorganize and add new examples.
+
 0.11 - January 8, 2014
 ----------------------
 - HP Cloud provider
