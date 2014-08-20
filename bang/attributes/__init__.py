@@ -48,6 +48,12 @@ DEPLOYER_CREDS = 'deployer_credentials'
 #: The top-level key for logging-related configuration options.
 LOGGING = 'logging'
 
+#: A dict containing ansible tuning variables.
+ANSIBLE = 'ansible'
+
+#: An integer indicating verbosity.
+VERBOSITY = 'verbosity'
+
 #: Like chicken fried chicken... this is a way to configure the name of the tag
 #: in which the combined stack-role (a.k.a. *name*) will be stored.  By
 #: default, unless this is specified directly in ~/.bangrc, the *name* value

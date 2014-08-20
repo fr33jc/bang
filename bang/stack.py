@@ -259,15 +259,20 @@ class Stack(object):
         if ssh_user:
             pb_kwargs['remote_user'] = ssh_user
 
-        # DEBUG: this is like passing ``-vvvv`` to ansible-playbook
-        # ansible.utils.VERBOSITY = 4
+        ansible_verbosity = cfg.get(A.ANSIBLE, {}).get(A.VERBOSITY, 1)
+        ansible.utils.VERBOSITY = ansible_verbosity
         for playbook in cfg.get(A.PLAYBOOKS, []):
             playbook_path = os.path.join(playbook_dir, playbook)
 
             # gratuitously stolen from main() in ``ansible-playbook``
             stats = callbacks.AggregateStats()
-            playbook_cb = callbacks.PlaybookCallbacks(verbose=1)
-            runner_cb = callbacks.PlaybookRunnerCallbacks(stats, verbose=1)
+            playbook_cb = callbacks.PlaybookCallbacks(
+                    verbose=ansible_verbosity
+                    )
+            runner_cb = callbacks.PlaybookRunnerCallbacks(
+                    stats,
+                    verbose=ansible_verbosity
+                    )
 
             extra_kwargs = {
                     'playbook': playbook_path,
