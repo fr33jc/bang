@@ -1,6 +1,6 @@
 - name: Inspect group
-  hosts: $target_group
+  hosts: '{{target_group}}'
 
   tasks:
   - name: Gather facts
-    debug: msg="Gathering facts about $target_group"
+    debug: msg="Gathering facts about {{target_group}}"

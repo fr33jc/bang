@@ -4,7 +4,7 @@
   tasks:
   - include: ../python/install-pip.yml
   - name: install dependencies
-    apt: pkg=$item
+    apt: pkg={{item}}
     with_items:
     - python-paramiko
   - name: install bang
