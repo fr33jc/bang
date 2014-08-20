@@ -21,9 +21,10 @@ configuration management to provide one-shot, automated deployment of entire
 project *stacks*.
 
 Bang instantiates cloud resources (e.g. AWS EC2/OpenStack Nova server
-instances), then leverages `Ansible <http://ansible.cc/>`_ for configuration of
-all servers whether they are in a server room in the office, across the country
-in a private datacenter, or hosted by a public cloud provider.
+instances), then leverages `Ansible <http://www.ansible.com/>`_ for
+configuration of all servers whether they are in a server room in the office,
+across the country in a private datacenter, or hosted by a public cloud
+provider.
 
 The latest online documentation lives at http://fr33jc.github.com/bang/.
 
