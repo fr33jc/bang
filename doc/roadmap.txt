@@ -40,8 +40,6 @@ General Features
 - Allow absolute paths to playbooks, or a customizable playbook
   search path.
 
-- Allow named playbook sets in stack configs.
-
 - Add playbook parallelization.  Allow running multiple playbooks at
   once.  Leave it up to the deployers to sort out inter-playbook
   dependencies.
