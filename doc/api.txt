@@ -119,15 +119,6 @@ API
     :show-inheritance:
 
 
-:mod:`bang.providers.hpcloud.nova_ext`
---------------------------------------
-
-.. automodule:: bang.providers.hpcloud.nova_ext
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 :mod:`bang.providers.hpcloud.reddwarf`
 ---------------------------------------
 
