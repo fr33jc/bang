@@ -172,6 +172,19 @@ def main():
                         deployment and server configuration.
                         """),
                 }),
+            ('--no-deploy', {
+                'action': 'store_false',
+                'dest': 'deploy',
+                'help': dedent("""\
+                        Do *not* deploy infrastructure resources.
+
+                        This allows the person performing the deployment to
+                        skip creating infrastructure and go straight to
+                        configuring the servers.  It should be obvious that
+                        configuration may fail if it references infrastructure
+                        resources that have not already been created.
+                        """),
+                }),
             # TODO: implement validate/dry-run
             # ('--check', '-c', {
             #     'action': 'store_true',
@@ -217,7 +230,8 @@ def main():
 
     initialize_logging(config)
     # TODO:  config.validate()
-    stack.deploy()
+    if args.deploy:
+        stack.deploy()
     if args.configure:
         stack.configure()
     config.autoinc()

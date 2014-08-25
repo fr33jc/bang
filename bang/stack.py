@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with bang.  If not, see <http://www.gnu.org/licenses/>.
 import copy
+import functools
 import json
 import multiprocessing
 import os.path
@@ -31,6 +32,15 @@ from .deployers import get_stage_deployers
 from .inventory import BangsibleInventory
 from .util import log, SharedNamespace, SharedMap
 from . import BangError, resources as R, attributes as A
+
+
+def require_inventory(f):
+    @functools.wraps(f)
+    def wrapper(self, *args, **kwargs):
+        if not self.have_inventory:
+            self.gather_inventory()
+        return f(self, *args, **kwargs)
+    return wrapper
 
 
 class Stack(object):
@@ -54,6 +64,7 @@ class Stack(object):
 
         self.groups_and_vars = SharedMap(self.manager)
         self.lb_sec_groups = SharedMap(self.manager)
+        self.have_inventory = False
 
         """
         Deployers stash inventory data for any newly-created servers in this
@@ -217,7 +228,9 @@ class Stack(object):
 
         """
         self._run('deploy')
+        self.have_inventory = True
 
+    @require_inventory
     def configure(self):
         """
         Executes the ansible playbooks that configure the servers in the stack.
@@ -316,6 +329,16 @@ class Stack(object):
             if failed:
                 raise BangError("Server configuration failed!")
 
+    def gather_inventory(self):
+        """
+        Gathers existing inventory info.
+
+        Does *not* create any new infrastructure.
+        """
+        self._run('inventory')
+        self.have_inventory = True
+
+    @require_inventory
     def show_inventory(self):
         """
         Satisfies the ``--list`` portion of ansible's external inventory API.
@@ -325,7 +348,6 @@ class Stack(object):
         http://ansible.cc/docs/api.html#external-inventory-scripts
 
         """
-        self._run('inventory')
         print json.dumps(copy.deepcopy(self.groups_and_vars.lists))
 
     def show_host(self, host):
