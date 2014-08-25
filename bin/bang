@@ -114,6 +114,7 @@ def main():
                     API keys, SSL certs, etc...) that you don't normally want
                     to check in to version control with the main stack
                     configuration.
+
                     """),
                 'nargs': '*',
                 'metavar': 'CONFIG_SPEC',
@@ -147,6 +148,7 @@ def main():
 
                             # run some command
                             ansible webservers -i /path/to/bang -m ping
+
                         """),
                 'dest': 'ansible_list',
                 }),
@@ -156,6 +158,7 @@ def main():
 
                         Be sure to set the ``BANG_CONFIGS`` environment
                         variable to a colon-separated list of config specs.
+
                         """),
                 'dest': 'ansible_host',
                 'metavar': 'HOST',
@@ -170,6 +173,7 @@ def main():
                         This allows the person performing the deployment to
                         perform some manual tweaking between resource
                         deployment and server configuration.
+
                         """),
                 }),
             ('--no-deploy', {
@@ -183,6 +187,7 @@ def main():
                         configuring the servers.  It should be obvious that
                         configuration may fail if it references infrastructure
                         resources that have not already been created.
+
                         """),
                 }),
             # TODO: implement validate/dry-run
