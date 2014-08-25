@@ -33,9 +33,10 @@ from logging.handlers import BufferingHandler
 import boto
 from boto.s3.key import Key
 from logutils.queue import QueueHandler, QueueListener
+from . import attributes as A
 
 
-CONSOLE_LOGGING_FORMAT = '%(asctime)s %(levelname)8s %(processName)s - %(message)s'
+CONSOLE_LOGGING_FORMAT = '%(asctime)s %(levelname)8s %(processName)s - %(message)s'  # noqa
 
 # use the multiprocessing logger so when we start parallelizing the
 # deploys, we have a seamless transition.
@@ -217,14 +218,14 @@ class S3Handler(BufferingHandler):
 def initialize_logging(config):
     multiprocessing.current_process().name = 'Stack'
     cfg = config.get('logging', {})
-    console_level = cfg.get('console_level', 'INFO')
+    console_level = cfg.get(A.logging.CONSOLE_LEVEL, 'INFO')
     log.setLevel(console_level)
 
     # log to s3 if there's a destination specified in the config
-    bucket = cfg.get('s3_bucket')
+    bucket = cfg.get(A.logging.S3_BUCKET)
     if bucket:
         json_formatter = JSONFormatter(config)
-        s3_handler = S3Handler(bucket, cfg.get('s3_prefix', ''))
+        s3_handler = S3Handler(bucket, cfg.get(A.logging.S3_PREFIX, ''))
         s3_handler.setFormatter(json_formatter)
         s3_handler.setLevel(logging.INFO)
 
@@ -247,6 +248,18 @@ def initialize_logging(config):
 
         qh = QueueHandler(queue)
         log.addHandler(qh)
+
+    # set local_file to an empty string or some other false value to deactivate
+    local_file = cfg.get(A.logging.LOCAL_FILE, 'bang.log')
+    if local_file:
+        local_handler = logging.FileHandler(local_file)
+        local_handler.setFormatter(
+                logging.Formatter(CONSOLE_LOGGING_FORMAT)
+                )
+        local_handler.setLevel(
+                cfg.get(A.logging.LOCAL_FILE_LEVEL, logging.DEBUG)
+                )
+        log.addHandler(local_handler)
 
     # also log to stderr
     if sys.stderr.isatty():
@@ -303,7 +316,7 @@ def parse_args(arg_config, alt_args=None):
     return parser.parse_args(alt_args)
 
 
-SECRET_PATTERN = re.compile(r'(\s*(\S*(password|pwd|key|secret|god)\S*)\s*:\s*)\S+')
+SECRET_PATTERN = re.compile(r'(\s*(\S*(password|pwd|key|secret|god)\S*)\s*:\s*)\S+')  # noqa
 SECRET_WHITELIST = ('ssh_key', 'key_pair')
 
 

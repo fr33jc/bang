@@ -20,7 +20,16 @@ Constants for attribute names of the various resources.
 This module contains the top-level config file attributes including those that
 are typically placed in ~/.bangrc.
 """
-from . import creds, server, secgroup, tags, database, ssh_key, loadbalancer
+from . import (  # noqa
+        creds,
+        server,
+        secgroup,
+        tags,
+        database,
+        ssh_key,
+        loadbalancer,
+        logging,
+        )
 
 #: The stack name.  Its value is used to tag servers and other cloud resources.
 NAME = 'name'
