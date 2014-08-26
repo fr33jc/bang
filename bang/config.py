@@ -64,7 +64,7 @@ def read_raw_bangrc():
     bangrc_path = os.path.join(os.environ['HOME'], '.bangrc')
     try:
         with open(bangrc_path) as f:
-            return yaml.load(f)
+            return yaml.safe_load(f)
     except IOError:
         pass
     return {}
@@ -169,7 +169,7 @@ class Config(dict):
             config.filepath = config_paths[0]
         for c in config_paths:
             with open(c) as f:
-                deep_merge_dicts(config, yaml.load(f))
+                deep_merge_dicts(config, yaml.safe_load(f))
         if prepare:
             config.prepare()
         return config
