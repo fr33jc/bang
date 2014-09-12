@@ -54,6 +54,9 @@ General Features
 
 - Add ``--destroy`` to automate destruction of stacks.
 
+- Support ``ansible-playbook`` runtime options (e.g. vault and tag
+  values).
+
 
 Providers
 ---------
