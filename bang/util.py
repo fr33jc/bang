@@ -269,6 +269,7 @@ def initialize_logging(config):
     handler = logging.StreamHandler()  # default stream is stderr
     handler.setFormatter(formatter)
     handler.setLevel(logging.DEBUG)
+    log.setLevel(logging.DEBUG)
     log.addHandler(handler)
     log.debug('Logging initialized.')
 
