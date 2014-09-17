@@ -217,7 +217,7 @@ class S3Handler(BufferingHandler):
 
 def initialize_logging(config):
     multiprocessing.current_process().name = 'Stack'
-    cfg = config.get('logging', {})
+    cfg = config.get(A.LOGGING, {})
     console_level = cfg.get(A.logging.CONSOLE_LEVEL, 'INFO')
     log.setLevel(console_level)
 
