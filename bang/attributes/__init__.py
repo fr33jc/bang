@@ -21,6 +21,7 @@ This module contains the top-level config file attributes including those that
 are typically placed in ~/.bangrc.
 """
 from . import (  # noqa
+        ansible,
         creds,
         server,
         secgroup,
@@ -59,9 +60,6 @@ LOGGING = 'logging'
 
 #: A dict containing ansible tuning variables.
 ANSIBLE = 'ansible'
-
-#: An integer indicating verbosity.
-VERBOSITY = 'verbosity'
 
 #: Like chicken fried chicken... this is a way to configure the name of the tag
 #: in which the combined stack-role (a.k.a. *name*) will be stored.  By

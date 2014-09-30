@@ -272,7 +272,7 @@ class Stack(object):
         if ssh_user:
             pb_kwargs['remote_user'] = ssh_user
 
-        ansible_verbosity = cfg.get(A.ANSIBLE, {}).get(A.VERBOSITY, 1)
+        ansible_verbosity = cfg.get(A.ANSIBLE, {}).get(A.ansible.VERBOSITY, 1)
         ansible.utils.VERBOSITY = ansible_verbosity
         for playbook in cfg.get(A.PLAYBOOKS, []):
             playbook_path = os.path.join(playbook_dir, playbook)
