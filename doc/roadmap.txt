@@ -57,6 +57,7 @@ General Features
 - Support ``ansible-playbook`` runtime options (e.g. vault and tag
   values).
 
+- Allow selecting public or private IP addresses for cloud hosts.
 
 Providers
 ---------
