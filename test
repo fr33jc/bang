@@ -1,13 +1,57 @@
 #!/bin/sh
-BASE_ARGS="--with-coverage --cover-html --cover-package=bang"
-case "$1" in
-    "-h" | "--help")
-        echo "Usage:  $(basename $0) [-a | --all] [extra_nosetests_args...]"
-        exit 0
-        ;;
-    "-a" | "--cover-all")
-        extra_args="--cover-inclusive"
-        shift
-        ;;
-esac
-nosetests $BASE_ARGS "$extra_args" "$@"
+
+_help() {
+    cat <<EOF
+Usage:
+
+    $(basename $0)  [-h | --help] \\
+            [-c | --cover-all] \\
+            [-e | --extra-providers] \\
+            [-r | --real-connection] \\
+            [nosetests_args...]
+
+Options:
+
+    --help
+        Show online documentation.
+
+    --cover-all
+        Produce coverage results for all Python files in working directory.
+        This is useful for discovering holes in coverage.
+
+    --extra-providers
+        Run tests for all providers, including non-default providers like HP
+        Cloud and RightScale.
+
+    --real-connection
+        Run tests that require real connections to providers.
+EOF
+    exit 0
+}
+
+extra_args=""
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        "-h" | "--help")
+            _help
+            ;;
+        "-c" | "--cover-all")
+            extra_args="$extra_args --cover-inclusive"
+            ;;
+        "-e" | "--extra-providers")
+            extra_args="$extra_args -a extra"
+            ;;
+        "-r" | "--real-connection")
+            extra_args="$extra_args -a real_conn"
+            ;;
+        *)
+            extra_args="$extra_args $1"
+            ;;
+    esac
+    shift
+done
+
+nosetests --with-coverage --cover-html --cover-package=bang -A 'not extra and not real_conn' $extra_args
+
+# vim: set ai et sw=4 ts=4 sts=4:
