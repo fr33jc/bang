@@ -69,6 +69,7 @@ fi
 
 $pip $here/etc/requirements.pip || die "Could not install main dependencies"
 $pip $here/etc/devreqs.pip || die "Could not install dev dependencies"
+$pip $here/etc/devextras.pip || die "Could not install dev extras"
 $bin_dir/python setup.py develop || die "Could not setup bang in dev mode"
 
 local_link=activate-$venv_name
