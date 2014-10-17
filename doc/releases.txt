@@ -2,6 +2,32 @@ Release Summary
 ===============
 
 
+0.13 - October 17, 2014
+-----------------------
+- Ansible integration
+
+    - Allow setting some ansible options via bang config or
+      ~/.bangrc:
+
+        - Verbosity (especially for ssh debugging)::
+
+            ansible:
+              verbosity: 4
+
+        - Vault::
+
+            ansible:
+              # ask_vault_pass: true
+              # vault_pass: "thisshouldfail"
+              vault_pass: "bangbang"
+
+    - Test against ansible 1.7.2
+
+- Add ``--no-deploy`` arg to only use existing infrastructure.
+- Switch to yaml.safe_load.
+- Improve compatibility with Python 2.6, including adding 2.6 as a
+  Travis CI target.
+
 0.12 - August 19, 2014
 ----------------------
 - Update to ansible >= 1.6.3.
