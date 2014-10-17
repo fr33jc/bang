@@ -20,6 +20,87 @@ API
     :show-inheritance:
 
 
+:mod:`bang.attributes.ansible`
+------------------------------
+
+.. automodule:: bang.attributes.ansible
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.creds`
+----------------------------
+
+.. automodule:: bang.attributes.creds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.database`
+-------------------------------
+
+.. automodule:: bang.attributes.database
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.loadbalancer`
+-----------------------------------
+
+.. automodule:: bang.attributes.loadbalancer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.logging`
+------------------------------
+
+.. automodule:: bang.attributes.logging
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.secgroup`
+-------------------------------
+
+.. automodule:: bang.attributes.secgroup
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.server`
+-----------------------------
+
+.. automodule:: bang.attributes.server
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.ssh_key`
+------------------------------
+
+.. automodule:: bang.attributes.ssh_key
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+:mod:`bang.attributes.tags`
+---------------------------
+
+.. automodule:: bang.attributes.tags
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`bang.config`
 ------------------
 
