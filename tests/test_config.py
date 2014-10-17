@@ -25,6 +25,7 @@ import unittest
 import yaml
 
 from mock import patch
+from bang import attributes as A
 
 
 class TestWithTmpDir(unittest.TestCase):
@@ -279,3 +280,53 @@ class TestConfig(TestWithTmpDir):
         self.assertEqual(exp_path, cfg.filepath)
         self.assertEqual(self.a, cfg)
         os.chdir(orig_dir)
+
+
+@patch('bang.config.ask_passwords')
+def test_prompt_vault_pass(mock_ask_passwords):
+    exp_vault_pass = 'vaultpass'
+    mock_ask_passwords.return_value = (
+            'sshpass',
+            'sudopass',
+            'supass',
+            exp_vault_pass,
+            )
+
+    # happy path
+    config = C.Config({
+        A.ANSIBLE: {A.ansible.ASK_VAULT_PASS: True}
+        })
+    config._prepare_ansible()
+    assert mock_ask_passwords.called
+
+    # prompted should override a value set in a config file
+    mock_ask_passwords.reset_mock()
+    config = C.Config({
+        A.ANSIBLE: {
+            A.ansible.ASK_VAULT_PASS: True,
+            A.ansible.VAULT_PASS: 'default_vault_pass',
+            }
+        })
+    config._prepare_ansible()
+    assert exp_vault_pass == config[A.ANSIBLE][A.ansible.VAULT_PASS]
+
+    # all default cases should *not* prompt for password
+    # ... explicitly set False
+    mock_ask_passwords.reset_mock()
+    config = C.Config({
+        A.ANSIBLE: {A.ansible.ASK_VAULT_PASS: False}
+        })
+    config._prepare_ansible()
+    assert not mock_ask_passwords.called
+
+    # ... no ask_vault_pass config
+    mock_ask_passwords.reset_mock()
+    config = C.Config({A.ANSIBLE: {}})
+    config._prepare_ansible()
+    assert not mock_ask_passwords.called
+
+    # ... no ansible configs at all
+    mock_ask_passwords.reset_mock()
+    config = C.Config()
+    config._prepare_ansible()
+    assert not mock_ask_passwords.called

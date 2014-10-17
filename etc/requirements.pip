@@ -23,7 +23,7 @@ logutils>=0.3.2
 # PyYAML
 #     - Homepage:  http://pyyaml.org/
 #     - License:  MIT
-PyYAML==3.10
+PyYAML>=3.10
 
 # Boto
 #     - Homepage:  http://code.google.com/p/boto/

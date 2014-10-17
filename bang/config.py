@@ -22,6 +22,7 @@ import yaml
 
 from . import resources as R, attributes as A
 from .util import log, bump_version_tail, deep_merge_dicts
+from ansible.utils import ask_passwords
 
 
 DEFAULT_CONFIG_DIR = 'bang-stacks'
@@ -173,6 +174,13 @@ class Config(dict):
         if prepare:
             config.prepare()
         return config
+
+    def _prepare_ansible(self):
+        ansible_cfg = self.get(A.ANSIBLE, {})
+        if ansible_cfg.get(A.ansible.ASK_VAULT_PASS):
+            (_, _, _, vault_pass) = ask_passwords(ask_vault_pass=True)
+            ansible_cfg[A.ansible.VAULT_PASS] = vault_pass
+            self[A.ANSIBLE] = ansible_cfg
 
     def _prepare_dbs(self):
         dbcreds = self.get(R.DATABASE_CREDS, {})
@@ -405,6 +413,7 @@ class Config(dict):
         self._prepare_dbs()
         self._prepare_servers()
         self._prepare_load_balancers()
+        self._prepare_ansible()
 
     def validate(self):
         """

@@ -36,6 +36,11 @@ version: 0.1
 playbooks:
 - a_playbook.yml
 
+ansible:
+  # ask_vault_pass: true
+  # vault_pass: "thisshouldfail"
+  vault_pass: "bangbang"
+
 servers:
   my_other_pc:
     groups:
