@@ -46,3 +46,8 @@ servers:
     groups:
     - useless
     hostname: 192.168.0.10
+
+  ignore_me:
+    groups:
+    - to_be_ignored
+    hostname: 192.168.0.11

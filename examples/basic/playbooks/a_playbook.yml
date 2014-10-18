@@ -1,7 +1,15 @@
 - include: gather_facts.yml target_group=useless
 
+- hosts: "*:!to_be_ignored"
+  tasks:
+  - debug: msg="hey"
+
 - hosts: useless
   vars_files:
   - vars/secretish.yml
   tasks:
   - debug: msg="don't tell anyone, but the secret is ^{{encrypt_me}}^"
+  - name: delegated echo
+    shell: echo "working on {{inventory_hostname}}"
+    delegate_to: localhost
+
