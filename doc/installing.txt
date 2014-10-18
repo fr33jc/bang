@@ -47,6 +47,26 @@ build-time dependencies from the Debian/Ubuntu package repos::
 Then install Bang as directed above.
 
 
+RightScale
+~~~~~~~~~~
+Bang allows you to combine traditional cloud providers like AWS with
+higher-level cloud managers like RightScale in the same stack.
+Generally, RightScale provides sufficient automation on top of AWS.
+However, it is sometimes necessary to supplement RightScale's
+features.  E.g.
+
+- Using new AWS technologies that are not yet supported by
+  RightScale.
+- Integrating inherited application stacks that do not use Chef.
+- Working with resources in multiple public cloud providers or even
+  traditional private datacenters.
+
+To enable the ``rightscale`` provider, install the following
+dependency::
+
+    pip install git+https://github.com/brantai/python-rightscale
+
+
 .. _openstack-deps:
 
 OpenStack
