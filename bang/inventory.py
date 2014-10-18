@@ -26,11 +26,10 @@ def get_ansible_groups(group_map):
     map of lists of host strings.
 
     """
-    # Much of this logic is cribbed from
+    # Some of this logic is cribbed from
     # ansible.inventory.script.InventoryScript
     all_hosts = {}
     group_all = Group('all')
-    group_all.add_host(Host('127.0.0.1'))
     groups = [group_all]
     for gname, hosts in group_map.iteritems():
         g = Group(gname)
@@ -64,5 +63,6 @@ class BangsibleInventory(ansible.inventory.Inventory):
                 hostname,
                 vault_password,
                 )
-        deep_merge_dicts(hvars, self._bang_vars_per_host[hostname])
+        if hostname not in ['127.0.0.1', 'localhost']:
+            deep_merge_dicts(hvars, self._bang_vars_per_host[hostname])
         return hvars
