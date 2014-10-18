@@ -350,7 +350,12 @@ class Stack(object):
         http://ansible.cc/docs/api.html#external-inventory-scripts
 
         """
-        print json.dumps(copy.deepcopy(self.groups_and_vars.lists))
+        inv_lists = copy.deepcopy(self.groups_and_vars.lists)
+        # sort the host lists to help consumers of the inventory (e.g. ansible
+        # playbooks)
+        for l in inv_lists.values():
+            l.sort()
+        print json.dumps(inv_lists)
 
     def show_host(self, host):
         """
