@@ -34,7 +34,6 @@ sys.path.insert(0, PROJECT_DIR)
 extensions = [
         'sphinx.ext.autodoc',
         'sphinx.ext.viewcode',
-        'rst2pdf.pdfbuilder',
         'sphinxarg.ext',
         ]
 

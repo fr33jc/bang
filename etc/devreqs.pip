@@ -1,3 +1,5 @@
+-r docreqs.pip
+
 # Coverage
 #     - Code coverage measurement tool
 #     - License:  BSD
@@ -8,12 +10,6 @@ coverage==3.5.2
 #       runner, etc...)
 #     - License:  LGPL
 nose==1.1.2
-
-# rst2pdf
-#     - Converts restructuredtext to PDF via reportlab
-#     - Homepage:  http://rst2pdf.ralsina.com.ar/
-#     - License:  MIT
-rst2pdf
 
 # mock
 #     - Mocking library
