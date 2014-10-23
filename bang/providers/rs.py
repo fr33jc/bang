@@ -246,6 +246,27 @@ class Servers(Consul):
         # we're too fast for rs/ec2... slow down a little bit, twice
         time.sleep(2)
 
+        # tag it!
+        try:
+            self.api.tags.multi_add(
+                    data={
+                        'resource_hrefs[]': [instance_href],
+                        'tags[]': [
+                            'ec2:role=%s' % self.basename,
+                            'ec2:stack=%s' % self.deployment.soul['name'],
+                            ]
+                        }
+                    )
+        except HTTPError as e:
+            log.error(
+                    'Failed to tag server %s. RightScale returned %d:\n%s' % (
+                        self.basename,
+                        e.response.status_code,
+                        e.response.content
+                        )
+                    )
+
+        # wait for it to be operational
         def find_running_instance():
             instance = self.cloud.instances.show(res_id=res_id)
             if instance.soul['state'] == 'operational':

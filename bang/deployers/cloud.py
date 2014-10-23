@@ -143,6 +143,11 @@ class CloudManagerServerDeployer(ServerDeployer):
     """
     def __init__(self, *args, **kwargs):
         super(CloudManagerServerDeployer, self).__init__(*args, **kwargs)
+
+        # TODO: this should probably be done per provider
+        if not hasattr(self, 'inputs'):
+            self.inputs = {}
+
         self.server_def = None
         self.phases = [
                 (True, self.create_stack),
