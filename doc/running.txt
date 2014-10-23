@@ -37,4 +37,6 @@ Set this to a colon-separated list of configuration specs.
 
 Other Options
 -------------
-.. program-output:: ../bin/bang -h
+.. argparse::
+    :ref: bang.cmd_bang.get_parser
+    :prog: bang

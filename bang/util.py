@@ -26,7 +26,6 @@ import time
 import re
 import subprocess
 import sys
-import textwrap
 from datetime import datetime
 from logging.handlers import BufferingHandler
 
@@ -301,20 +300,17 @@ def poll_with_timeout(timeout_s, break_func, wake_every_s=60):
     return res
 
 
-def parse_args(arg_config, alt_args=None):
-    """
-    ``alt_args`` is an optional list of strings to use *instead* of sys.argv.
-    """
+def get_argparser(arg_config):
     parser = argparse.ArgumentParser(
             prog=arg_config.get('prog'),
-            description=textwrap.dedent(arg_config['description']),
+            description=arg_config['description'],
             formatter_class=argparse.RawTextHelpFormatter,
             )
     for ac in arg_config['arguments']:
         args = ac[:-1]
         kwargs = ac[-1]
         parser.add_argument(*args, **kwargs)
-    return parser.parse_args(alt_args)
+    return parser
 
 
 SECRET_PATTERN = re.compile(r'(\s*(\S*(password|pwd|key|secret|god)\S*)\s*:\s*)\S+')  # noqa

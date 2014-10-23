@@ -1,0 +1,12 @@
+# Sphinx
+#     - http://sphinx.pocoo.org/
+#     - Documentation generator
+#     - License:  BSD 2-clause
+Sphinx==1.2.3
+
+# sphinx-argparse
+#     - https://github.com/ribozz/sphinx-argparse
+#     - Sphinx plugin to document argparse parser objects so they don't have to
+#       be documented multiple times.
+#     - License:  MIT
+sphinx-argparse==0.1.13
