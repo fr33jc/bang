@@ -222,15 +222,16 @@ class Servers(Consul):
                     % (e.response.status_code, e.response.content)
                     )
 
-    def create_server(self, href, inputs, timeout_s=DEFAULT_TIMEOUT_S):
+    def create_server(self, href, timeout_s=DEFAULT_TIMEOUT_S, **kwargs):
         log.info(
                 'Launching server %s... this could take a while...'
                 % self.basename
                 )
-        data = dict([
-                ('inputs[%s]' % k, 'text:%s' % v)
-                for k, v in inputs.iteritems()
-                ])
+        if 'inputs' in kwargs:
+            data = dict([
+                    ('inputs[%s]' % k, 'text:%s' % v)
+                    for k, v in kwargs['inputs'].iteritems()
+                    ])
         try:
             response = self.api.client.post(href + '/launch', data=data)
         except HTTPError as e:

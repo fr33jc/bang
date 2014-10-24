@@ -143,11 +143,6 @@ class CloudManagerServerDeployer(ServerDeployer):
     """
     def __init__(self, *args, **kwargs):
         super(CloudManagerServerDeployer, self).__init__(*args, **kwargs)
-
-        # TODO: this should probably be done per provider
-        if not hasattr(self, 'inputs'):
-            self.inputs = {}
-
         self.server_def = None
         self.phases = [
                 (True, self.create_stack),
@@ -191,10 +186,11 @@ class CloudManagerServerDeployer(ServerDeployer):
         log.debug('Defined server %s' % self.server_def)
 
     def create(self):
+        kwargs = getattr(self, self.provider, {})
         self.server_attrs = self.consul.create_server(
                 self.server_def,
-                self.inputs,
                 timeout_s=self.launch_timeout_s,
+                **kwargs
                 )
         log.debug('Post launch delay: %d s' % self.post_launch_delay_s)
         time.sleep(self.post_launch_delay_s)
