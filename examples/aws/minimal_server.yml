@@ -1,0 +1,17 @@
+name: minimal_server
+
+version: 0.1
+
+servers:
+  minimal:
+    groups:
+    - minimal
+    provider: aws
+    region_name: us-west-2
+    availability_zone: us-west-2b
+    instance_type: t1.micro
+    disk_image_id: ami-ed2864dd  # debian wheezy 64-bit (2014-10-24)
+    ssh_key_name: deployer
+    launch_timeout_s: 120
+    aws:
+      instance_profile_name: instance_profile_for_iam_role
