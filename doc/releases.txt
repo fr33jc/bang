@@ -2,6 +2,56 @@ Release Summary
 ===============
 
 
+0.14 - October 24, 2014
+-----------------------
+- AWS
+
+    - Add support for creating S3 buckets (Thanks to Sol Reynolds).
+    - Add support for IAM roles and other provider-specific server
+      attributes.
+
+- RightScale
+
+    - *BREAKING CHANGE*: Inputs are now nested one level deeper in a
+      server config stanza.
+
+      This was done as part of adding support for provider-specific
+      server attributes.  Prior to this change, one would specify the
+      server template inputs in a rightscale server config like this:
+
+      .. code-block:: yaml
+
+          servers:
+            my_rs_server:
+              # other server attributes omitted for brevity
+              provider: rightscale
+              inputs:
+                DOMAIN: foo.net
+                SOME_OTHER_INPUT: blah blah
+
+      Provider-specific attributes needed to create/launch servers
+      will now be nested one level deeper in an attribute named after
+      the provider.  With this new structure, the corresponding
+      configuration for the example above would look like this:
+
+      .. code-block:: yaml
+
+          servers:
+            my_rs_server:
+              # other server attributes omitted for brevity
+              provider: rightscale
+              rightscale:
+                inputs:
+                  DOMAIN: foo.net
+                  SOME_OTHER_INPUT: blah blah
+
+    - Propagate rs deployment and server name to ec2 tags.
+
+- Issues addressed
+
+    - Fix handling of localhost in inventory
+    - #11: Return sorted host lists for ``bang --list``.
+
 0.13 - October 17, 2014
 -----------------------
 - Ansible integration
