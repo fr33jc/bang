@@ -143,7 +143,7 @@ class Servers(Consul):
     def define_server(
             self, basename, server_tpl, server_tpl_rev, instance_type,
             ssh_key_name, tags=None, availability_zone=None,
-            security_groups=None,
+            security_groups=None, **provider_extras
             ):
         """
         Creates a new server instance.  This call blocks until the server is
@@ -174,6 +174,9 @@ class Servers(Consul):
 
         :param list security_groups: The security groups to which this server
             should belong.
+
+        :param provider_extras: Extra server instance attributes as defined in
+            http://reference.rightscale.com/api1.5/resources/ResourceServers.html#create
 
         :rtype:  :class:`dict`
 
@@ -211,8 +214,21 @@ class Servers(Consul):
                 'server[instance][ssh_key_href]': sshkey.href,
                 'server[name]': basename,
                 }
-        # TODO: replace when python-rightscale no longer blows up due to empty
-        # response body.
+
+        if provider_extras:
+            # use a copy because the inbound provider_extras will be passed in again
+            # when calling create_server()
+            shallow_kwargs = provider_extras.copy()
+
+            # defer all inputs until launch time
+            shallow_kwargs.pop(A.rightscale.INPUTS, None)
+
+            cloud_specific = shallow_kwargs.pop(A.rightscale.CLOUD_SPECIFIC, {})
+            for k, v in cloud_specific.iteritems():
+                data['server[instance][cloud_specific_attributes][%s]' % k] = v
+            for k, v in shallow_kwargs.iteritems():
+                data['server[instance][%s]' % k] = v
+
         try:
             response = self.api.client.post('/api/servers', data=data)
             return response.headers['location']
@@ -221,17 +237,20 @@ class Servers(Consul):
                     'Definition failed.  RightScale returned %d:\n%s'
                     % (e.response.status_code, e.response.content)
                     )
+            raise
 
-    def create_server(self, href, timeout_s=DEFAULT_TIMEOUT_S, **kwargs):
+    def create_server(self, href, timeout_s=DEFAULT_TIMEOUT_S, **provider_extras):
         log.info(
                 'Launching server %s... this could take a while...'
                 % self.basename
                 )
-        if 'inputs' in kwargs:
+        if 'inputs' in provider_extras:
             data = dict([
                     ('inputs[%s]' % k, 'text:%s' % v)
-                    for k, v in kwargs['inputs'].iteritems()
+                    for k, v in provider_extras['inputs'].iteritems()
                     ])
+        else:
+            data = None
         try:
             response = self.api.client.post(href + '/launch', data=data)
         except HTTPError as e:

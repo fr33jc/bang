@@ -30,6 +30,7 @@ from . import (  # noqa
         ssh_key,
         loadbalancer,
         logging,
+        rightscale,
         )
 
 #: The stack name.  Its value is used to tag servers and other cloud resources.
