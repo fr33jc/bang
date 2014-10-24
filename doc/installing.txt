@@ -51,7 +51,7 @@ RightScale
 ~~~~~~~~~~
 Bang allows you to combine traditional cloud providers like AWS with
 higher-level cloud managers like RightScale in the same stack.
-Generally, RightScale provides sufficient automation on top of AWS.
+Generally, RightScale provides ample automation on top of AWS.
 However, it is sometimes necessary to supplement RightScale's
 features.  E.g.
 
