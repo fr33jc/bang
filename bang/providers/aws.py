@@ -157,7 +157,7 @@ class EC2(Consul):
 
     def create_server(self, basename, disk_image_id, instance_type,
             ssh_key_name, tags=None, availability_zone=None,
-            timeout_s=DEFAULT_TIMEOUT_S, **kwargs):
+            timeout_s=DEFAULT_TIMEOUT_S, **provider_extras):
         """
         Creates a new server instance.  This call blocks until the server is
         created and available for normal use, or :attr:`timeout_s` has elapsed.
@@ -199,7 +199,7 @@ class EC2(Consul):
                 key_name=ssh_key_name,
                 placement=availability_zone,
                 disable_api_termination=True,
-                **kwargs
+                **provider_extras
                 )
         instance = res.instances[0]
 

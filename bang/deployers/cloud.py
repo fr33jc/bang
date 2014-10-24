@@ -70,6 +70,7 @@ class ServerDeployer(RegionedDeployer):
         super(ServerDeployer, self).__init__(*args, **kwargs)
         self.namespace = self.stack.get_namespace(self.name)
         self.server_attrs = None
+        self.provider_extras = getattr(self, self.provider, {})
         self.phases = [
                 (True, self.find_existing),
                 (lambda: self.server_attrs, self.wait_for_running),
@@ -118,6 +119,7 @@ class ServerDeployer(RegionedDeployer):
                 availability_zone=self.availability_zone,
                 timeout_s=self.launch_timeout_s,
                 security_groups=self.security_groups,
+                **self.provider_extras
                 )
         log.debug('Post launch delay: %d s' % self.post_launch_delay_s)
         time.sleep(self.post_launch_delay_s)
@@ -144,7 +146,6 @@ class CloudManagerServerDeployer(ServerDeployer):
     def __init__(self, *args, **kwargs):
         super(CloudManagerServerDeployer, self).__init__(*args, **kwargs)
         self.server_def = None
-        self.provider_extras = getattr(self, self.provider, {})
         self.phases = [
                 (True, self.create_stack),
                 (True, self.find_existing),
