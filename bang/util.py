@@ -217,8 +217,6 @@ class S3Handler(BufferingHandler):
 def initialize_logging(config):
     multiprocessing.current_process().name = 'Stack'
     cfg = config.get(A.LOGGING, {})
-    console_level = cfg.get(A.logging.CONSOLE_LEVEL, 'INFO')
-    log.setLevel(console_level)
 
     # log to s3 if there's a destination specified in the config
     bucket = cfg.get(A.logging.S3_BUCKET)
@@ -267,7 +265,8 @@ def initialize_logging(config):
         formatter = logging.Formatter(CONSOLE_LOGGING_FORMAT)
     handler = logging.StreamHandler()  # default stream is stderr
     handler.setFormatter(formatter)
-    handler.setLevel(logging.DEBUG)
+    console_level = cfg.get(A.logging.CONSOLE_LEVEL, 'INFO')
+    handler.setLevel(console_level)
     log.setLevel(logging.DEBUG)
     log.addHandler(handler)
     log.debug('Logging initialized.')
