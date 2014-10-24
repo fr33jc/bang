@@ -1,0 +1,21 @@
+name: example_deployment
+
+version: 0.1
+
+servers:
+  tagtemp:
+    groups:
+    - tagtemp
+    provider: rightscale
+    region_name: EC2 us-west-2
+    availability_zone: us-west-2c
+    server_tpl: Base ServerTemplate for Linux (RSB) (v13.3)
+    server_tpl_rev: 100  # zero is HEAD
+    instance_type: m1.small
+    ssh_key_name: prod_deployer
+    launch_timeout_s: 1200
+    rightscale:
+      cloud_specific_attributes:
+        iam_instance_profile: instance_profile_name_for_iam_role
+      inputs:
+        SYS_TZINFO: UTC

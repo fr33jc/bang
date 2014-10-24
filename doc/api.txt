@@ -218,6 +218,15 @@ API
     :show-inheritance:
 
 
+:mod:`bang.providers.rs`
+------------------------
+
+.. automodule:: bang.providers.rs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`bang.stack`
 -----------------
 
