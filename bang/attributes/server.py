@@ -37,3 +37,13 @@ INV_NAME = 'inventory_hostname'
 INV_NAME_SHORT = 'inventory_hostname_short'
 GROUP_NAMES = 'group_names'
 PRIVATE_IP = 'private_ip'
+
+#: Provides the server definition from the Bang config as a fact available to
+#: the playbooks.  E.g. in order to get access to the ``disk_image_id`` in a
+#: playbook:
+#:
+#: .. code-block:: jinja
+#:
+#:     {{bang_server_attributes.disk_image_id}}
+#:
+BANG_ATTRS = 'bang_server_attributes'

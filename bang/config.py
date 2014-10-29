@@ -341,6 +341,14 @@ class Config(dict):
                     svars.update(scope)
                 else:
                     svars[scope] = self[scope]
+
+            # make all of the launch-time attributes (e.g. disk_image_id,
+            # launch_timeout_s, ssh_key_name, etc...) available as facts in
+            # case you need them in a playbook.
+            sattrs = server.copy()
+            sattrs.pop(A.server.SCOPES, None)
+            svars[A.server.BANG_ATTRS] = sattrs
+
             server[A.server.VARS] = svars
 
     def _prepare_load_balancers(self):
