@@ -340,16 +340,18 @@ class LoadBalancerDeployer(RegionedDeployer):
     'instance' per distinct load balancer needs to be created (i.e.
     that any elasticity is handled by the cloud service).
 
-    Example config::
+    Example config:
 
-      load_balancers:
-        test_balancer:
-          balance_server_name: server_defined_in_servers_section
-          region: region-1.geo-1
-          provider: hpcloud
-          backend_port: '8080'
-          protocol: tcp
-          port: '443'
+    .. code-block:: yaml
+
+        load_balancers:
+          test_balancer:
+            balance_server_name: server_defined_in_servers_section
+            region: region-1.geo-1
+            provider: hpcloud
+            backend_port: '8080'
+            protocol: tcp
+            port: '443'
 
     """
 
