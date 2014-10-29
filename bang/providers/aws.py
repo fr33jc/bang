@@ -92,12 +92,12 @@ class EC2SecGroup(object):
             for g in rule.grants:
                 parsed = {}
                 if g.cidr_ip:
-                    s = parsed['source'] = str(g.cidr_ip)
+                    s = parsed['cidr_ip'] = str(g.cidr_ip)
                 elif g.owner_id == owner_id and g.name == ec2sg.name:
                     parsed['source_self'] = True
                     s = ec2sg.name
                 else:
-                    parsed['source_group'] = '%s/%s' % (g.owner_id, g.name)
+                    parsed['src_group'] = '%s/%s' % (g.owner_id, g.name)
                     s = g.name
                 parsed.update(core)
                 rules[(p, f, t, s)] = parsed
