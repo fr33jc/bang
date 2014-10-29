@@ -49,7 +49,9 @@ class EC2SecGroup(object):
     The :attr:`rules` attribute is a specialized dict whose keys are the
     *normalized* rule definitions, and whose values are EC2 grants which can be
     kwargs-expanded when passing
-    :meth:`boto.ec2.securitygroup.SecurityGroup.revoke`.  E.g.::
+    :meth:`boto.ec2.securitygroup.SecurityGroup.revoke`.  E.g.:
+
+    .. code-block:: python
 
         {
             ('tcp', 1, 65535, 'group-foo'): {
