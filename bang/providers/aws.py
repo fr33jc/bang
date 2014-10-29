@@ -97,7 +97,7 @@ class EC2SecGroup(object):
                     parsed['source_self'] = True
                     s = ec2sg.name
                 else:
-                    parsed['src_group'] = '%s/%s' % (g.owner_id, g.name)
+                    parsed['src_group'] = g 
                     s = g.name
                 parsed.update(core)
                 rules[(p, f, t, s)] = parsed

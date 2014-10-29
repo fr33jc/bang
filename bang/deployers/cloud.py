@@ -266,13 +266,13 @@ class SecurityGroupRulesetDeployer(RegionedDeployer):
 
         """
         # TODO: add error handling
+        for rule in self.delete_these_rules:
+            self.consul.delete_secgroup_rule(rule)
+            log.info("Revoked: %s" % rule)
         for rule in self.create_these_rules:
             args = rule + (self.name, )
             self.consul.create_secgroup_rule(*args)
             log.info("Authorized: %s" % str(rule))
-        for rule in self.delete_these_rules:
-            self.consul.delete_secgroup_rule(rule)
-            log.info("Revoked: %s" % rule)
 
 
 class BucketDeployer(BaseDeployer):
