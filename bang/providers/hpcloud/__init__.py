@@ -141,7 +141,9 @@ class HPCloud(OpenStack):
 
         **Examples of Credentials Configuration**
 
-        - Bare minimum for authentication using HP API keys::
+        - Bare minimum for authentication using HP API keys:
+
+          .. code-block:: yaml
 
             deployer_credentials:
               hpcloud:
@@ -152,7 +154,9 @@ class HPCloud(OpenStack):
 
         - With multiple *compute* availability zones activated, the region must
           also be specified (due to current limitations in the OpenStack client
-          libraries)::
+          libraries):
+
+          .. code-block:: yaml
 
             deployer_credentials:
               hpcloud:
@@ -163,7 +167,9 @@ class HPCloud(OpenStack):
                 region_name: az-1.region-a.geo-1
 
         - Using ``username`` and ``password`` is also allowed, but
-          discouraged::
+          discouraged:
+
+          .. code-block:: yaml
 
             deployer_credentials:
               hpcloud:
