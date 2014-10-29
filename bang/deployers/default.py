@@ -23,7 +23,9 @@ class ServerDeployer(Deployer):
     and do not need special deployment logic (e.g. traditional server rooms,
     manually deployed cloud servers).
 
-    Example of a minimal configuration for a manually provisioned app server::
+    Example of a minimal configuration for a manually provisioned app server:
+
+    .. code-block:: yaml
 
         my_app_server:
           hostname: my_hostname_or_ip_address
