@@ -39,6 +39,41 @@ def find_exact(collection, **kwargs):
             return f
 
 
+def normalize_input_value(value):
+    """
+    Returns an input value normalized for RightScale API 2.0.
+
+    This typically means adjusting the *input type* prefix to be one of the
+    valid values::
+
+        blank
+        ignore
+        inherit
+        text:
+        env:
+        cred:
+        key:
+        array:
+
+    This list comes from the table published here:
+
+        http://reference.rightscale.com/api1.5/resources/ResourceInputs.html#multi_update
+
+    If unspecified, value is assumed to be a of type ``text``.
+
+    """
+    if value in ('blank', 'ignore', 'inherit'):
+        return value
+
+    # assume any unspecified or unknown types are text
+    tokens = value.split(':')
+    if (len(tokens) < 2
+            or tokens[0] not in ('text', 'env', 'cred', 'key', 'array')):
+        return 'text:%s' % value
+
+    return value
+
+
 class Servers(Consul):
     """The consul for the RightScale servers."""
     def __init__(self, *args, **kwargs):
@@ -246,7 +281,7 @@ class Servers(Consul):
                 )
         if 'inputs' in provider_extras:
             data = dict([
-                    ('inputs[%s]' % k, 'text:%s' % v)
+                    ('inputs[%s]' % k, normalize_input_value(v))
                     for k, v in provider_extras['inputs'].iteritems()
                     ])
         else:
