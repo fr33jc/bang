@@ -25,6 +25,7 @@ def test_normalize_input_values():
             ('env:foo', 'env:foo'),
             ('cred:foo', 'cred:foo'),
             ('key:foo', 'key:foo'),
+            ('key:foo:1', 'key:foo:1'),
             ('array:foo', 'array:foo'),
             ('bar', 'text:bar'),
             ('unknown:blah', 'text:unknown:blah'),
