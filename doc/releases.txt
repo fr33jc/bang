@@ -2,6 +2,21 @@ Release Summary
 ===============
 
 
+0.15 - November 4, 2014
+-----------------------
+- Expose bang server attributes to playbooks.  E.g. in an ansible
+  template, ``{{bang_server_attributes.instance_type}}`` might
+  resolve to the value ``t1.micro``.
+
+- AWS
+
+    - Fix security group handler.  Thanks Sol Reynolds!
+
+- RightScale
+
+    - Support all input types.  E.g. ``key:``, ``cred:``, ``env:``,
+      etc...
+
 0.14.1 - October 24, 2014
 -------------------------
 - Fix console logging level configuration.
