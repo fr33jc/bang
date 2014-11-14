@@ -97,6 +97,7 @@ class TestBangrc(TestWithTmpDir):
 class TestConfigSpec(unittest.TestCase):
 
     def test_path(self):
+        # gozinta == gozoutta
         for exp in (
                 '/home/deployer/bang-stacks/fubar.yml',
                 '../blargh/asdf.yml',
@@ -105,6 +106,16 @@ class TestConfigSpec(unittest.TestCase):
                 'buya.yml',
                 ):
             act = C.resolve_config_spec(exp)
+            self.assertEqual(exp, act)
+
+        # transformation
+        for args, exp in (
+                (('foo', ), 'foo.yml'),
+                (('foo', '/path/to/configs'), '/path/to/configs/foo.yml'),
+                (('bar', '/path/to/configs/'), '/path/to/configs/bar.yml'),
+                (('fullstack', '/etc/bang'), '/etc/bang/fullstack.yml'),
+                ):
+            act = C.resolve_config_spec(*args)
             self.assertEqual(exp, act)
 
     def test_basename(self):
