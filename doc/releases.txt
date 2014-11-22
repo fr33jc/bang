@@ -129,14 +129,17 @@ Release Summary
 
 - Allow load balancers to be region-specific.
 
+
+Older Releases
+--------------
 0.10.1 - July 22, 2013
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 - Remove install-time dependency on OpenStack client libraries.
   Users who need OpenStack/HP Cloud support must now install those
   libraries independently.  :ref:`Details... <openstack-deps>`
 
 0.9 - July 16, 2013
--------------------
+~~~~~~~~~~~~~~~~~~~
 - Update dependencies.  Now using:
 
     - Ansible 1.2
@@ -146,20 +149,20 @@ Release Summary
 - Fix EC2 server provisioning
 
 0.8 - May 7, 2013
------------------
+~~~~~~~~~~~~~~~~~
 - AWS provider
 
     - Create and manage EC2 security groups and their rules.
 
 0.7.1 - April 16, 2013
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 - Fix installation breakage caused by conflicting dependency
   statements between python-reddwarfclient and python-novaclient.
   The resolution was to remove the explicit dependency on
   ``prettytable``.
 
 0.7 - April 12, 2013
---------------------
+~~~~~~~~~~~~~~~~~~~~
 - *BREAKING CHANGE*:  In a stack config file, the top-level resource
   definition containers were lists.  From 0.7 onward, they must be
   defined as dictionaries.  This allows resource definitions to be
@@ -182,7 +185,7 @@ Release Summary
   definitions.
 
 0.6 - April 3, 2013
--------------------
+~~~~~~~~~~~~~~~~~~~
 - HP Cloud provider
 
     - Add LBaaS support.
@@ -194,23 +197,23 @@ Release Summary
 - Allow setting ssh username+password as command-line arguments.
 
 0.5 - March 11, 2013
---------------------
+~~~~~~~~~~~~~~~~~~~~
 - Expose server ``name`` to playbooks as ``server_class``
 
 0.4 - March 6, 2013
--------------------
+~~~~~~~~~~~~~~~~~~~
 - Update OpenStack client library dependencies
 - Add auto-registration of SSH keys for OpenStack
 
 0.3 - February 11, 2013
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 - Update ansible dependency to 1.0
 - Fix bug that caused a crash when running ``bang --list`` with a
   server definition in the stack config for which there was no
   matching running instance.
 
 0.2 - January 30, 3013
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 - AWS provider
 
     - Compute (EC2)
@@ -219,9 +222,8 @@ Release Summary
 - Separate regions from availability zones
 - Fix multi-region stacks
 
-
 0.1 - January 15, 2013
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 - Core Ansible playbook runner
 - Parallel cloud resource deployment
 - Generic OpenStack provider
