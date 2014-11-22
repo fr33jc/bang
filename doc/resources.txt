@@ -1,0 +1,34 @@
+Project Resources
+=================
+
+
+Documentation
+-------------
+The documentation is hosted on *Read the Docs*:
+
+    http://bang.readthedocs.org/
+
+
+Source Code
+-----------
+The stable codeline lives in *GitHub*:
+
+    https://github.com/fr33jc/bang
+
+Experimental or otherwise unstable development is also hosted on
+GitHub in a separate clone:
+
+    https://github.com/fr33jc/bang-unstable
+
+Large patches from contributors will be integrated into the unstable
+repo first.  When these new features have been tested and cleaned up
+appropriately, they will be rebased and promoted to the stable master
+for release.
+
+
+Continuous Integration
+----------------------
+Pushes to the stable master trigger automated unit testing on *Travis
+CI*:
+
+    https://travis-ci.org/fr33jc/bang
