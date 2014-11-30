@@ -1,0 +1,12 @@
+{
+  "Type" : "Notification",
+  "MessageId" : "2a5e0fa0-a5b4-555a-b66b-43035aa39542",
+  "TopicArn" : "arn:aws:sns:us-west-2:123456789012:jctemp",
+  "Subject" : "Auto Scaling: launch for group \"jctemp\"",
+  "Message" : "{\"StatusCode\":\"InProgress\",\"Service\":\"AWS Auto Scaling\",\"AutoScalingGroupName\":\"jctemp\",\"Description\":\"Launching a new EC2 instance: i-81a09fac\",\"ActivityId\":\"c4b16dc7-f36e-459b-add1-16f9da016db5\",\"Event\":\"autoscaling:EC2_INSTANCE_LAUNCH\",\"Details\":{\"Availability Zone\":\"us-west-2a\"},\"AutoScalingGroupARN\":\"arn:aws:autoscaling:us-west-2:123456789012:autoScalingGroup:9400e4a1-e282-4495-a9aa-4f204b793b41:autoScalingGroupName/jctemp\",\"Progress\":50,\"Time\":\"2014-09-30T00:44:07.786Z\",\"AccountId\":\"123456789012\",\"RequestId\":\"c4b16dc7-f36e-459b-add1-16f9da016db5\",\"StatusMessage\":\"\",\"EndTime\":\"2014-09-30T00:44:07.786Z\",\"EC2InstanceId\":\"i-81a09fac\",\"StartTime\":\"2014-09-30T00:43:04.778Z\",\"Cause\":\"At 2014-09-30T00:43:00Z a user request created an AutoScalingGroup changing the desired capacity from 0 to 1.  At 2014-09-30T00:43:03Z an instance was started in response to a difference between desired and actual capacity, increasing the capacity from 0 to 1.\"}",
+  "Timestamp" : "2014-09-30T00:44:07.841Z",
+  "SignatureVersion" : "1",
+  "Signature" : "fT+C+62vG2nqtJVwVx88/OJ9OZDHtNc5MeZXQIIm3mvYL+2CPiIURCJU16DRHBKRzuY75FC2wRE/UDzSKPBA9mOpK2jnX5dW34GlYfDm5gxR0zKmS/Ae2vhfLKjRFBNA9t50CJJJX04TalUZS66fXpmzcDgFu0Lg4N3OjPHQosWih83Vtqf16uWHdsCieLfin1r1IUFasQcLrQJlmZ6htXCOaUiW6d/yMn+Zr3ucelxp0yJGOIJIwm06mhSF+3A0Vg4LarKkUEweUb862MymCFdv88ehAdVRBzG2glxbQ4r3VMYhPaXFweRapLUZ7+djDtTVztC3XMYXiksB/DNbow==",
+  "SigningCertURL" : "https://sns.us-west-2.amazonaws.com/SimpleNotificationService-d6d679a1d18e95c2f9ffcf11f4f9e198.pem",
+  "UnsubscribeURL" : "https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:123456789012:jctemp:bc03cdc5-907f-4fb5-b954-fa6f77feb1af"
+}

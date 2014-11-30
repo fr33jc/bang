@@ -1,0 +1,17 @@
+{
+  "Type" : "Notification",
+  "MessageId" : "68a8feed-80b1-5533-934a-b24e742c8cc6",
+  "TopicArn" : "arn:aws:sns:us-west-2:123456789012:jctemp",
+  "Subject" : "test",
+  "Message" : "this is a test",
+  "Timestamp" : "2014-09-29T23:59:25.311Z",
+  "SignatureVersion" : "1",
+  "Signature" : "dZ/rG4rdSn15Fqnse1XgW7I9sPJwwzAUmC6com2UPksAF/zuXvrvnqE800UsjiGC+OSRWz69EALKWxyAwBh6YDDj7t3Z9LeZo4xmifzv/vVrMlgQztV/phlL0VZqYJbP8jHefMgYoH9+VD/vsFd4UrDbyb0pBSAMy6TUZ3lUuqRvcdroJyudZUC4FnmymcO3yivvlREJ+9k6RPZ/Mb/SDdjBjYbwNJSTq4bEzSXy24i7trs1JnTy4meiCWq0erKBX9yJ+LnbM+plixiWHY5IjtFxvSXiZwJO0DYQRo6M6+pQmTh4RHLPjUQo89SNGDw/OU7nzlHu10JRohQGOj5lnw==",
+  "SigningCertURL" : "https://sns.us-west-2.amazonaws.com/SimpleNotificationService-d6d679a1d18e95c2f9ffcf11f4f9e198.pem",
+  "UnsubscribeURL" : "https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:123456789012:jctemp:bc03cdc5-907f-4fb5-b954-fa6f77feb1af",
+  "MessageAttributes" : {
+    "AWS.SNS.MOBILE.MPNS.Type" : {"Type":"String","Value":"token"},
+    "AWS.SNS.MOBILE.WNS.Type" : {"Type":"String","Value":"wns/badge"},
+    "AWS.SNS.MOBILE.MPNS.NotificationClass" : {"Type":"String","Value":"realtime"}
+  }
+}
