@@ -26,7 +26,7 @@ configuration of all servers whether they are in a server room in the office,
 across the country in a private datacenter, or hosted by a public cloud
 provider.
 
-Read the latest online documentation lives at http://bang.readthedocs.org/ or
+Read the `latest online documentation <http://bang.readthedocs.org/>`_ or
 browse through `examples of stack configurations and playbooks
 <https://github.com/fr33jc/bang/tree/master/examples>`_.
 
