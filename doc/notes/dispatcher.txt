@@ -1,0 +1,68 @@
+- use cases
+
+    - need a way to request a bang job separately from managing
+      ssh+shell access to servers
+    - need a way to react to ec2 autoscaling events
+
+        - start with SQS as the message broker for bang events
+          because EC2 can already post there (via SNS) and because it
+          means we don't have to setup an HA web service to receive
+          bang events
+
+    - must be HA
+
+        - a bang-dispatcher running in each AZ!
+        - requires the bang-dispatcher host to have ssh access to all
+          potential target servers
+
+    - need a way to be notified of overall result of bang job
+
+        - return queue and/or rest endpoint specified in job request
+          message
+
+    - need a way to be notified of high-level, intermediate status of
+      bang job
+
+        - *status* field in response message
+
+    - need a way to retrieve the details of a bang job run
+
+        - *details_url* field in response message maybe pointing to a
+          file in S3?
+
+    - create uniform bang+ansible logs
+
+        - this means creating custom ansible callback classes to pass
+          in during a bang.stack.Stack.configure() run
+        - put these up in S3
+
+
+- Just Enough Access Control
+
+    - authorization
+
+        - use IAM to control who gets access to the inbound queue
+        - map IAM user to groups in bang-dispatcher config
+        - map groups to allowed jobs in bang-dispatcher config
+
+    - authentication
+
+        - ECDSA signature to determine which user sent the actual message
+
+            - embed or depend on pure python ``ecdsa`` library
+
+        - generate a "public key"/verification key based on the IAM
+          user's AWS secret key
+
+            - this means we don't have to depend on ssh keys for users
+              who just want to fire off jobs
+
+        - storage options for public key data:
+
+            - directly bang-dispatcher config files
+            - behind HTTPS with valid TLS
+
+- references
+
+    - http://docs.aws.amazon.com/sns/latest/dg/SendMessageToHttp.verify.signature.html
+    - https://github.com/warner/python-ecdsa
