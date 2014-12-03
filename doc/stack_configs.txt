@@ -2,6 +2,13 @@ Stack Configurations
 ====================
 
 
+Examples
+--------
+Examples of Bang config files are available with the source code:
+
+    https://github.com/fr33jc/bang/tree/master/examples
+
+
 Config File Structure
 ---------------------
 The configuration file is a `YAML <http://www.yaml.org>`_ document.
@@ -17,8 +24,8 @@ in Bang and there is an implicit, broader grouping of these top-level
 keys/sections.  The broader groups are:
 
     - `General Stack Properties`_
-    - `Stack Resource Definitions`_
     - `Configuration Scopes`_
+    - `Stack Resource Definitions`_
 
 Any string that is a valid YAML identifier and is **not** a reserved
 top-level key is available for use as a *custom configuration scope*.
@@ -118,18 +125,67 @@ load_balancers:
 
 Configuration Scopes
 ~~~~~~~~~~~~~~~~~~~~
+Configuration scopes typically define high-level attributes and
+values that you might want to alter between instantiations of a
+stack.  For example, a blog stack might be made up of some frontend
+load balancers running haproxy 1.4 that distribute requests to an
+array of web app servers running version 1.1 of your custom
+application called *my_blog_app*.  The production Bang config would
+have config scopes like this:
+
+.. code-block:: yaml
+
+    my_blog_app:
+      version: '1.1'
+
+    haproxy:
+      version: '1.4'
+
+You would reuse the same infrastructure configuration and set of
+Ansible playbooks to stand up a QA or development stack.  When you
+release version 1.2 of *my_blog_app* you just adjust the value in the
+config scope like this:
+
+.. code-block:: yaml
+
+    my_blog_app:
+      version: '1.2'
+
+    haproxy:
+      version: '1.4'
+
+In this example, if you then wanted to test out haproxy 1.5, the
+config scopes would look like this:
+
+.. code-block:: yaml
+
+    my_blog_app:
+      version: '1.2'
+
+    haproxy:
+      version: '1.5'
+
+Config scopes can be used for more than just component versions.
+When deciding what attributes to put in config scopes and what
+attributes to put into your Ansible variables, consider that Bang
+config scopes are ideal for values that you might vary per
+environment or per iteration of an environment.
+
+Since the Bang config files and all of the associated playbooks are
+just text files, they can be managed the same way you manage your
+code in a revision control system.  You can branch, merge, and tag
+the same way you do with your application code.  With the right tags,
+it's trivial to compare the config scope values that are in
+production with those that are in your QA or development
+environments.
+
+Reusable Definition
+^^^^^^^^^^^^^^^^^^^
 Any top-level section name that is not specified above as a reserved
 key in `General Stack Properties`_ or in `Stack Resource
 Definitions`_, is parsed and categorized as a custom configuration
-scope.
-
-Any configuration scope names that are added to a server's
-``config_scopes`` list, make those values available to Ansible
-playbooks as vars.
-
-Configuration scopes typically define attributes for applications and
-middleware in the stack.  For example, a media transcoding web
-service might have the following config scopes:
+scope.  For example, a media transcoding web service might have the
+following config scopes:
 
 .. code-block:: yaml
 
@@ -152,3 +208,100 @@ service might have the following config scopes:
 
 The key names and the values are arbitrary and defined solely by the
 user.
+
+When running the on-server configuration phase of a Bang run, Bang
+uses the ``config_scopes`` in a server definition to determine what
+to pass to Ansible as *inventory variables* for a particular host.
+To refer to a top-level, reusable config scope in a server
+definition, list its name like this:
+
+.. code-block:: yaml
+
+    # Config Scopes
+    # -------------
+    apache:
+      preforks: 4
+      modules:
+      - rewrite
+      - wsgi
+
+    my_web_frontend:
+      version: '1.2.0'
+      log_level: WARN
+
+
+    # Resource Definitions
+    # --------------------
+    servers:
+      web_server:
+        # other server attributes go here
+        config_scopes:
+        - apache
+        - my_web_frontend
+
+When Ansible runs on the ``web_server`` hosts, the following
+references to the config scope variables will be evaluated to their
+associated values:
+
+.. code-block:: jinja
+
+    {{apache.preforks}}          <-- evaluates to 4
+    {{my_web_frontend.version}}  <-- evaluates to 1.2.0
+
+Inline Definition
+^^^^^^^^^^^^^^^^^
+In addition to the top-level definitions, config scopes for a server
+may be defined inline.  This is mainly useful for
+simple stacks where reusing config scopes might not be needed.  For
+example:
+
+.. code-block:: yaml
+
+    webapp:
+      port: 8001
+      app_dir: /opt/foo/app
+
+    reverse_proxy:
+      server_name: newapp.company.com
+
+    servers:
+      blah:
+        config_scopes:
+        - webapp
+        - reverse_proxy
+        - this: is
+          a_config_scope: defined
+          inline: yo
+
+The config scopes above would make the following inventory variables
+available to Ansible:
+
+.. code-block:: python
+
+    {
+        'webapp': {
+            'port': 8001,
+            'app_dir': '/opt/foo/app',
+            },
+
+        'reverse_proxy': {
+            'server_name': 'huismans.kief.io',
+            },
+
+        'this': 'is',
+
+        'a_config_scope': 'defined',
+
+        'inline': 'yo',
+    }
+
+Which would let you use any of the following in playbooks and
+templates:
+
+.. code-block:: jinja
+
+    {{webapp.port}}
+    {{reverse_proxy.server_name}}
+    {{this}}
+    {{a_config_scope}}
+    {{inline}]
