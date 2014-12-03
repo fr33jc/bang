@@ -1,3 +1,4 @@
 include README.rst
 include COPYING
 include etc/requirements.pip
+recursive-include examples *
