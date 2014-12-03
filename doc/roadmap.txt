@@ -82,5 +82,4 @@ Providers
 
 - RightScale
 
-    - Add this as a new provider and enable mixed RightScale+AWS
-      stacks.
+    - Add support for server arrays.
