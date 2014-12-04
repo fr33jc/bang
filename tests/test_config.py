@@ -48,6 +48,10 @@ class TestBangrc(TestWithTmpDir):
         with patch.dict('os.environ', {'HOME': self.tmpdir}):
             return C.parse_bangrc()
 
+    def test_no_home_in_env(self):
+        with patch.dict('os.environ', clear=True):
+            self.assertEqual({}, C.parse_bangrc())
+
     def test_creds_from_bangrc(self):
         aws_id = 'AKIAIKFIE8FKSLR8FIE3'
         aws_secret = 'EU859vjksor73gkY378f9gkslbkrabcxwfyW2loo'

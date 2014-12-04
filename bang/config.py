@@ -62,13 +62,14 @@ def find_component_tarball(bucket, comp_name, comp_config):
 
 
 def read_raw_bangrc():
-    bangrc_path = os.path.join(os.environ['HOME'], '.bangrc')
     try:
+        # the path creation is in the try/except because $HOME might not exist
+        # in the current environ (e.g. init scripts)
+        bangrc_path = os.path.join(os.environ['HOME'], '.bangrc')
         with open(bangrc_path) as f:
             return yaml.safe_load(f)
-    except IOError:
-        pass
-    return {}
+    except:
+        return {}
 
 
 def parse_bangrc():
