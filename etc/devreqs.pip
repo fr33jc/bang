@@ -33,4 +33,4 @@ PyMySQL==0.5
 
 # RightScale Support
 # ------------------
-git+https://github.com/brantai/python-rightscale.git
+python-rightscale==0.1.2
