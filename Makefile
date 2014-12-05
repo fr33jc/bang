@@ -7,19 +7,23 @@ BANG_TAR_GZ := $(DIST_DIR)bang-$(VERSION).tar.gz
 
 ifndef V
   q := @
-  out := &>/dev/null
+  o := &>/dev/null
 endif
 
 venv_run := $(q)cd $(HERE); . activate-bang;
 setup_py := $(venv_run) ./setup.py
 
-default: sdist
+default: test
 
-.PHONY: sdist upload clean
+.PHONY: sdist test upload clean
 
 sdist: $(BANG_TAR_GZ)
 $(BANG_TAR_GZ):
+	$(q)$(MAKE) test $(o)
 	$(setup_py) sdist $(o)
+
+test:
+	$(venv_run) ./test $(o)
 
 upload: $(BANG_TAR_GZ)
 	$(setup_py) upload $(o)
