@@ -27,7 +27,7 @@ novaclient-auth-secretkey
 python-reddwarfclient==0.1.2
 # these are reddwarf dependencies that its package doesn't know it needs:
 httplib2>=0.7.7
-lxml>=3.0.1
+lxml>=3.0.1,<=3.4.0
 # this is only useful if you're using dbaas
 PyMySQL==0.5
 
