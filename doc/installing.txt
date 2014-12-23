@@ -46,6 +46,21 @@ build-time dependencies from the Debian/Ubuntu package repos::
 
 Then install Bang as directed above.
 
+OSX
+~~~
+... Using System Packages
+^^^^^^^^^^^^^^^^^^^^^^^^^
+    
+... In a Virtualenv
+^^^^^^^^^^^^^^^^^^^
+Install build-time dependencies with Homebrew, and link them: 
+    brew install libxml2
+    brew install libxslt
+    brew link libxml2 --force
+    brew link libxslt --force
+
+Then install Bang as directed above
+
 
 RightScale
 ~~~~~~~~~~
