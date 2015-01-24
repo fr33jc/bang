@@ -18,7 +18,7 @@
 # argparse
 #     - Homepage: http://code.google.com/p/argparse/
 #     - License: Python Software Foundation License
-argparse==1.3.0
+argparse>=1.2.1
 
 # logutils
 #     - Homepage:  http://code.google.com/p/logutils/
