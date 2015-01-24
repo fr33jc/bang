@@ -214,6 +214,20 @@ class S3Handler(BufferingHandler):
             key.set_contents_from_string(payload)
 
 
+def sanitize_config_loglevel(level):
+    '''
+    Kinda sorta backport of loglevel sanitization for Python 2.6.
+    '''
+    if sys.version_info[:2] != (2, 6) or isinstance(level, (int, long)):
+        return level
+    lvl = None
+    if isinstance(level, basestring):
+        lvl = logging._levelNames.get(level)
+    if not lvl:
+        raise ValueError('Invalid log level, %s' % level)
+    return lvl
+
+
 def initialize_logging(config):
     multiprocessing.current_process().name = 'Stack'
     cfg = config.get(A.LOGGING, {})
@@ -253,9 +267,10 @@ def initialize_logging(config):
         local_handler.setFormatter(
                 logging.Formatter(CONSOLE_LOGGING_FORMAT)
                 )
-        local_handler.setLevel(
+        level = sanitize_config_loglevel(
                 cfg.get(A.logging.LOCAL_FILE_LEVEL, logging.DEBUG)
                 )
+        local_handler.setLevel(level)
         log.addHandler(local_handler)
 
     # also log to stderr
@@ -265,7 +280,9 @@ def initialize_logging(config):
         formatter = logging.Formatter(CONSOLE_LOGGING_FORMAT)
     handler = logging.StreamHandler()  # default stream is stderr
     handler.setFormatter(formatter)
-    console_level = cfg.get(A.logging.CONSOLE_LEVEL, 'INFO')
+    console_level = sanitize_config_loglevel(
+            cfg.get(A.logging.CONSOLE_LEVEL, 'INFO')
+            )
     handler.setLevel(console_level)
     log.setLevel(logging.DEBUG)
     log.addHandler(handler)
