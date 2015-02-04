@@ -355,20 +355,10 @@ class Stack(object):
         # playbooks)
         for l in inv_lists.values():
             l.sort()
+
+        # new in ansible 1.3: add hostvars directly into ``--list`` output
+        inv_lists['_meta'] = {
+                'hostvars': self.groups_and_vars.dicts.copy()
+                }
+
         print json.dumps(inv_lists)
-
-    def show_host(self, host):
-        """
-        Satisfies the ``--host`` portion of ansible's external inventory API.
-
-        Allows ``bang`` to be used as an external inventory script, for example
-        when running ad-hoc ops tasks.  For more details, see:
-        http://ansible.cc/docs/api.html#external-inventory-scripts
-
-        """
-        self._run('inventory')
-        # use a deepcopy to make sure data doesn't move around on us in
-        # multiprocess-land:
-        all_hvars = copy.deepcopy(self.groups_and_vars.dicts)
-        hostvars = all_hvars.get(host, {})
-        print json.dumps(hostvars)

@@ -134,17 +134,6 @@ def get_parser():
                         """),
                 'dest': 'ansible_list',
                 }),
-            ('--host', {
-                'help': dedent("""\
-                        Show host variables in ansible-compatible JSON.
-
-                        Be sure to set the ``BANG_CONFIGS`` environment
-                        variable to a colon-separated list of config specs.
-
-                        """),
-                'dest': 'ansible_host',
-                'metavar': 'HOST',
-                }),
             ('--no-configure', {
                 'action': 'store_false',
                 'dest': 'configure',
@@ -220,10 +209,6 @@ def run_bang(alt_args=None):
 
     if args.ansible_list:
         stack.show_inventory()
-        return
-
-    if args.ansible_host:
-        stack.show_host(args.ansible_host)
         return
 
     initialize_logging(config)
