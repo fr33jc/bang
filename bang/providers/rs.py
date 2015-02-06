@@ -133,7 +133,10 @@ class Servers(Consul):
         res_id = href.split('/')[-1]
 
         def find_running_instance():
-            instance = self.cloud.instances.show(res_id=res_id)
+            instance = self.cloud.instances.show(
+                    res_id=res_id,
+                    params={'view': 'extended'},
+                    )
             if instance.soul['state'] == 'operational':
                 return instance
 
