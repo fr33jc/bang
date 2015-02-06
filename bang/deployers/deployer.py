@@ -73,6 +73,6 @@ class Deployer(object):
             elif action == 'inventory':
                 self.inventory()
         except BangError as e:
-            log.error(e.message)
+            log.error(e)
             raise
         log.info('%s complete.' % deployer)
