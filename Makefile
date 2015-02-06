@@ -26,7 +26,7 @@ test:
 	$(venv_run) ./test $(o)
 
 upload: $(BANG_TAR_GZ)
-	$(setup_py) upload $(o)
+	$(setup_py) sdist upload $(o)
 
 clean:
 	$(q)cd $(HERE); find . -name *.pyc | xargs rm -f $(o)
