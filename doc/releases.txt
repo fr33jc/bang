@@ -2,7 +2,7 @@ Release Summary
 ===============
 
 
-0.16 - February 5, 2015
+0.17 - February 5, 2015
 -----------------------
 - Add hostvars directly to ``--list`` output.
 
