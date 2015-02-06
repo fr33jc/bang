@@ -21,8 +21,8 @@ def server_to_dict(server):
     soul = server.soul
     return {
             A.server.ID: server.href,
-            A.server.PUBLIC_IPS: soul.get('public_ip_addresses', []),
-            A.server.PRIVATE_IPS: soul.get('private_ip_addresses', []),
+            A.server.PUBLIC_IPS: soul.get('public_dns_names', []),
+            A.server.PRIVATE_IPS: soul.get('private_dns_names', []),
             }
 
 
@@ -124,7 +124,7 @@ class Servers(Consul):
                 name=tags[A.STACK],
                 )
         filters.append('deployment_href==' + self.deployment.href)
-        params = {'filter[]': filters}
+        params = {'filter[]': filters, 'view': 'extended'}
         instances = self.cloud.instances.index(params=params)
         return [server_to_dict(i) for i in instances if i.soul['name'] == name]
 
