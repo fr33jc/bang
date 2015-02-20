@@ -27,8 +27,18 @@ def server_to_dict(server):
 
 
 def find_exact(collection, **kwargs):
-    filters = ['%s==%s' % (k, v) for k, v in kwargs.iteritems()]
-    fuzzy_matches = collection.index(params={'filter[]': filters})
+    filters = ['%s==%s' % (k, v) for k, v in kwargs.iteritems() if k and v]
+    if not filters:
+        return
+    try:
+        fuzzy_matches = collection.index(params={'filter[]': filters})
+    except HTTPError as e:
+        log.error(
+                'Failed finding exact with filter %s. '
+                'RightScale returned %d:\n%s'
+                % (filters, e.response.status_code, e.response.content)
+                )
+        raise
     for f in fuzzy_matches:
         exact = True
         for k, v in kwargs.iteritems():
