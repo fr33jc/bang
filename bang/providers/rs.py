@@ -231,37 +231,49 @@ class Servers(Consul):
         """
         log.info('Defining server %s...' % basename)
         self.basename = basename
+
+        # required attributes
         tpl = find_exact(
                 self.api.server_templates,
                 name=server_tpl,
                 revision=server_tpl_rev,
                 )
-        itype = find_exact(
-                self.cloud.instance_types,
-                name=instance_type,
-                )
-        datacenter = find_exact(
-                self.cloud.datacenters,
-                name=availability_zone,
-                )
+        # ... the rightscale and aws apis allow you to spin up a server without
+        #     a key, but let's not. we already assume you need ssh for ansible.
         sshkey = find_exact(
                 self.cloud.ssh_keys,
                 resource_uid=ssh_key_name,
                 )
-        secgroup_hrefs = [
-                find_exact(self.cloud.security_groups, name=n).href
-                for n in security_groups
-                ]
         data = {
                 'server[deployment_href]': self.deployment.href,
                 'server[instance][cloud_href]': self.cloud.href,
-                'server[instance][datacenter_href]': datacenter.href,
-                'server[instance][instance_type_href]': itype.href,
-                'server[instance][security_group_hrefs][]': secgroup_hrefs,
                 'server[instance][server_template_href]': tpl.href,
                 'server[instance][ssh_key_href]': sshkey.href,
                 'server[name]': basename,
                 }
+
+        # optional attributes (i.e. you can set these to '' in bang configs)
+        itype = find_exact(
+                self.cloud.instance_types,
+                name=instance_type,
+                )
+        if itype:
+            data['server[instance][instance_type_href]'] = itype.href
+
+        datacenter = find_exact(
+                self.cloud.datacenters,
+                name=availability_zone,
+                )
+        if datacenter:
+            data['server[instance][datacenter_href]'] = datacenter.href
+
+        secgroup_hrefs = []
+        for n in security_groups:
+            secgroup = find_exact(self.cloud.security_groups, name=n)
+            if secgroup:
+                secgroup_hrefs.append(secgroup.href)
+        if secgroup_hrefs:
+            data['server[instance][security_group_hrefs][]'] = secgroup_hrefs
 
         if provider_extras:
             # use a copy because the inbound provider_extras will be passed in again
