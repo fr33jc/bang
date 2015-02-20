@@ -30,7 +30,7 @@ DEFAULT_LAUNCH_TIMEOUT_S = 0
 
 RC_KEYS = [
         A.DEPLOYER_CREDS,
-        'config_dir',
+        A.CONFIG_DIR,
         A.NAME_TAG_NAME,
         A.LOGGING,
         A.ANSIBLE,
@@ -161,7 +161,7 @@ class Config(dict):
 
         """
         bangrc = parse_bangrc()
-        config_dir = bangrc.get('config_dir', DEFAULT_CONFIG_DIR)
+        config_dir = bangrc.get(A.CONFIG_DIR, DEFAULT_CONFIG_DIR)
         config_paths = [
                 resolve_config_spec(cs, config_dir) for cs in config_specs
                 ]

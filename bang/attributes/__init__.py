@@ -56,6 +56,17 @@ PROVIDER = 'provider'
 #: can be any valid provider.  E.g.  ``aws``, ``hpcloud``.
 DEPLOYER_CREDS = 'deployer_credentials'
 
+#: The directory in which to look for bang config files using their basenames.
+#: E.g. if your config_dir is specified as ``$HOME/bang-configs``, the
+#: following bang runs are equivalent::
+#:
+#:     bang my_web_app deploy
+#:
+#: And::
+#:
+#:     bang $HOME/bang-configs/my_web_app.yml $HOME/bang-configs/deploy.yml
+CONFIG_DIR = 'config_dir'
+
 #: The top-level key for logging-related configuration options.
 LOGGING = 'logging'
 
