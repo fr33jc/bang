@@ -13,3 +13,8 @@ Sphinx==1.2.3
 #     - License:  MIT
 sphinx-argparse==0.1.13
 
+# alabaster
+#     - https://github.com/bitprophet/alabaster
+#     - sphinx theme inspired by the original flask site
+#     - License: BSD 3-clause
+alabaster==0.6.3

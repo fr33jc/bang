@@ -11,6 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import alabaster
 import os.path
 import sys
 
@@ -35,6 +36,7 @@ extensions = [
         'sphinx.ext.autodoc',
         'sphinx.ext.viewcode',
         'sphinxarg.ext',
+        'alabaster',
         ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -110,14 +112,12 @@ def setup(app):
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "default"
+html_theme = 'alabaster'
 html_theme_options = {
-    "stickysidebar": "true",
-    "relbarbgcolor": "black",
-    "sidebarbgcolor": "#333333",
-    "footerbgcolor": "#333333",
-    "sidebarlinkcolor": "#9999aa",
-}
+        'logo': 'banglogo.svg',
+        'github_user': 'fr33jc',
+        'github_repo': 'bang',
+        }
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -126,6 +126,7 @@ html_theme_options = {
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
+html_theme_path = [alabaster.get_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -136,7 +137,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '_static/banglogo.svg'
+#html_logo = '_static/banglogo.svg'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -158,6 +159,14 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
+html_sidebars = {
+        '**': [
+            'about.html',
+            'navigation.html',
+            'searchbox.html',
+            'donate.html',
+            ]
+        }
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
