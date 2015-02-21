@@ -79,7 +79,7 @@ features.  E.g.
 To enable the ``rightscale`` provider, install the following
 dependency::
 
-    pip install git+https://github.com/brantai/python-rightscale
+    pip install python-rightscale==0.1.3
 
 
 .. _openstack-deps:

@@ -33,4 +33,4 @@ PyMySQL==0.5
 
 # RightScale Support
 # ------------------
-python-rightscale==0.1.2
+python-rightscale==0.1.3
