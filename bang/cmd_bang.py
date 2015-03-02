@@ -161,6 +161,36 @@ def get_parser():
 
                         """),
                 }),
+            ('--playbook', '-p', {
+                'action': 'append',
+                'dest': 'playbooks',
+                'metavar': 'PLAYBOOK',
+                'help': dedent("""\
+                        Specify playbook(s) to run during the Ansible phase.
+
+                        *WARNING* This overrides any list of playbooks
+                        specified in the bang config(s).
+
+                        This argument can be passed multiple times to specify
+                        multiple playbooks to run.  They will be executed in
+                        the order in which they are passed on the command line.
+
+                        E.g.
+
+                            # deploy and configure a stack as usual.  playbooks
+                            # are defined in ``my_own_cloud.yml``:
+                            bang own_cloud.yml
+
+                            # run an ad-hoc playbook on the same stack:
+                            bang own_cloud.yml -p update_loadbalancers.yml
+
+                            # run multiple ad-hoc playbooks:
+                            bang own_cloud -p start_maintenance_window.yml \\
+                                    -p restart_apache.yml \\
+                                    -p stop_maintenance_window.yml
+
+                        """),
+                }),
             # TODO: implement validate/dry-run
             # ('--check', '-c', {
             #     'action': 'store_true',
@@ -190,6 +220,9 @@ def run_bang(alt_args=None):
         return
 
     config = Config.from_config_specs(source)
+
+    if args.playbooks:
+        config[A.PLAYBOOKS] = args.playbooks
 
     if args.dump_config:
 
