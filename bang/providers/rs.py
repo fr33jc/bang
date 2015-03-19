@@ -291,13 +291,38 @@ class Servers(Consul):
 
         try:
             response = self.api.client.post('/api/servers', data=data)
-            return response.headers['location']
+            server_href = response.headers['location']
         except HTTPError as e:
             log.error(
                     'Definition failed.  RightScale returned %d:\n%s'
                     % (e.response.status_code, e.response.content)
                     )
             raise
+
+        # tag it!
+        all_tags = [
+                'ec2:role=%s' % self.basename,
+                'ec2:stack=%s' % self.deployment.soul['name'],
+                ]
+        all_tags.extend(['ec2:%s=%s' % (k, v) for k, v in tags.items()])
+        try:
+            self.api.tags.multi_add(
+                    data={
+                        'resource_hrefs[]': [server_href],
+                        'tags[]': all_tags,
+                        }
+                    )
+        except HTTPError as e:
+            log.error(
+                    'Failed to tag server %s. RightScale returned %d:\n%s' % (
+                        self.basename,
+                        e.response.status_code,
+                        e.response.content
+                        )
+                    )
+            raise
+
+        return server_href
 
     def create_server(self, href, timeout_s=DEFAULT_TIMEOUT_S, **provider_extras):
         log.info(
@@ -325,26 +350,6 @@ class Servers(Consul):
 
         # we're too fast for rs/ec2... slow down a little bit, twice
         time.sleep(2)
-
-        # tag it!
-        try:
-            self.api.tags.multi_add(
-                    data={
-                        'resource_hrefs[]': [instance_href],
-                        'tags[]': [
-                            'ec2:role=%s' % self.basename,
-                            'ec2:stack=%s' % self.deployment.soul['name'],
-                            ]
-                        }
-                    )
-        except HTTPError as e:
-            log.error(
-                    'Failed to tag server %s. RightScale returned %d:\n%s' % (
-                        self.basename,
-                        e.response.status_code,
-                        e.response.content
-                        )
-                    )
 
         # wait for it to be operational
         def find_running_instance():
