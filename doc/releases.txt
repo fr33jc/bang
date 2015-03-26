@@ -2,6 +2,21 @@ Release Summary
 ===============
 
 
+0.18 - March 26, 2015
+---------------------
+- Add a logo for the project.
+- Add ``-p`` command line argument to specify playbook(s) on command
+  line.
+- RightScale
+
+    - Update dependency to python-rightscale==0.1.3.
+    - Tag the rightscale server, not just the instance.  This insures
+      instances that launch from the same server definition also get
+      tagged.
+    - Allow instance type, AZ, secgroups to be optional for
+      RightScale servers.
+    - Expose details of RightScale API error response.
+
 0.17.1 - February 6, 2015
 -------------------------
 - Ensure stats callback fires.
