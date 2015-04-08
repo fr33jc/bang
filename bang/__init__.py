@@ -22,16 +22,7 @@ try:
 except ImportError:
     VERSION = 'badonkadonk'
 
-BANG_DIR = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            '..',
-            )
-        )
-
-WORK_DIR = os.path.join(BANG_DIR, 'work')
-
-CONFIG_DIR = os.path.join(BANG_DIR, 'config')
+BANG_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class BangError(Exception):
