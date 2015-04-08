@@ -107,3 +107,5 @@ KEY = 'key'
 #: for Ansible playbooks to consume.  It's a combination of the :attr:`NAME`
 #: and the :attr:`VERSION`.
 SERVER_CLASS = 'server_class'
+
+ANNOY_ME = 'annoy_me'

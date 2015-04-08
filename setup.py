@@ -16,6 +16,7 @@ setup(
         author='fr33jc',
         author_email='fr33jc@gmail.com',
         packages=find_packages(exclude=['tests']),
+        package_data={'bang': ['bang.wav']},
         license='GPLv3',
         description='Server and cloud resource deployment automation',
         platforms='POSIX',

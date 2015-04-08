@@ -17,9 +17,11 @@
 import bang
 import os
 import getpass
+import subprocess
 import sys
 from textwrap import dedent
 from bang import attributes as A
+from bang.annoy import annoy
 from bang.stack import Stack
 from bang.config import Config
 from bang.util import get_argparser, initialize_logging
@@ -237,6 +239,8 @@ def run_bang(alt_args=None):
         sys.exit()
 
     set_ssh_creds(config, args)
+
+    annoy(config)
 
     stack = Stack(config)
 
