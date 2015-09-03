@@ -31,7 +31,7 @@
 #
 
 VENV=virtualenv
-VENV_VERSION=1.10.1
+VENV_VERSION=13.1.2
 VENV_SYS_VERSION=`virtualenv --version`
 VENV_PY_URL=https://pypi.python.org/packages/source/v/virtualenv/virtualenv-${VENV_VERSION}.tar.gz
 
