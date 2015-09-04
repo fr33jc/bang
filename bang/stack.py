@@ -343,7 +343,7 @@ class Stack(object):
         self.have_inventory = True
 
     @require_inventory
-    def show_inventory(self):
+    def show_inventory(self, pretty=False):
         """
         Satisfies the ``--list`` portion of ansible's external inventory API.
 
@@ -363,4 +363,12 @@ class Stack(object):
                 'hostvars': self.groups_and_vars.dicts.copy()
                 }
 
-        print json.dumps(inv_lists)
+        if pretty:
+            kwargs = {
+                    'sort_keys': True,
+                    'indent': 2,
+                    'separators': (',', ': '),
+                    }
+        else:
+            kwargs = {}
+        print json.dumps(inv_lists, **kwargs)

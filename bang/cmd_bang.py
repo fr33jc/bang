@@ -244,7 +244,9 @@ def run_bang(alt_args=None):
     stack = Stack(config)
 
     if args.ansible_list:
-        stack.show_inventory()
+        stack.show_inventory(
+                os.isatty(sys.stdout.fileno())
+                )
         return
 
     initialize_logging(config)
