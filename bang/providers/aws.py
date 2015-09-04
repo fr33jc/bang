@@ -195,12 +195,13 @@ class EC2(Consul):
                 'Launching server %s... this could take a while...'
                 % basename
                 )
+        if 'disable_api_termination' not in provider_extras:
+            provider_extras['disable_api_termination'] = True
         res = self.ec2.run_instances(
                 disk_image_id,
                 instance_type=instance_type,
                 key_name=ssh_key_name,
                 placement=availability_zone,
-                disable_api_termination=True,
                 **provider_extras
                 )
         instance = res.instances[0]
