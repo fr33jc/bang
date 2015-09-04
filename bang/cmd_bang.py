@@ -17,7 +17,6 @@
 import bang
 import os
 import getpass
-import subprocess
 import sys
 from textwrap import dedent
 from bang import attributes as A
