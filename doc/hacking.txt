@@ -1,0 +1,8 @@
+Hacking
+=======
+.. toctree::
+    :maxdepth: 2
+
+    resources
+    design
+    api

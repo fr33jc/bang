@@ -1,35 +1,13 @@
 .. include::  ../README.rst
 
 
-User Guide
-----------
 .. toctree::
     :maxdepth: 2
 
-    installing
-    running
-    stack_configs
-    playbooks
-    help
-
-
-Releases
---------
-.. toctree::
-    :maxdepth: 2
-
+    user-guide
     releases
     roadmap
-
-
-Hacking
--------
-.. toctree::
-    :maxdepth: 2
-
-    resources
-    design
-    api
+    hacking
 
 
 Indices and tables

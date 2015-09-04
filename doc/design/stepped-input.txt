@@ -1,0 +1,75 @@
+Stepped Input Format
+--------------------
+Both Bang and Ansible use YAML as their input file formats.  However,
+the logical structure of the input in Bang is different enough from
+that of Ansible to be jarring to end users.
+
+Whereas Ansible's input consists of a set of steps that are executed
+in order, Bang's input is a declaration of state without control of
+execution order.
+
+To reconcile this difference and to allow end users finer-grained
+control of execution order, Bang should accept the following, new,
+*stepped* format:
+
+.. code-block:: yaml
+
+    - stack:
+        name: my_three_tier_site
+        version: 0.1
+
+    - servers:
+        masterdb:
+          hostname: really.its_publicly_accessible.com
+
+    - playbooks:
+      - register_masterdb_dns_alias.yml
+      - monitor_masterdb.yml
+
+    - config_scopes:
+        masterdb:
+          username: threetier
+          password: tierthree
+        webapp:
+          package:
+            name: my_biz_logic
+            version: 0.1.2
+          debug: false
+
+    - servers:
+        webapplb:
+          groups:
+          - common
+          - haproxy
+          provider: aws
+          region_name: us-west-2
+          availability_zone: us-west-2b
+          instance_type: t1.micro
+          disk_image_id: ami-ed2864dd  # debian wheezy 64-bit (2014-10-24)
+          ssh_key_name: deployer
+          launch_timeout_s: 120
+          aws:
+            instance_profile_name: webapplb
+
+        webapp:
+          groups:
+          - common
+          - my_biz_logic
+          provider: aws
+          region_name: us-west-2
+          availability_zone: us-west-2b
+          instance_type: m3.large
+          instance_count: 10
+          disk_image_id: ami-ed2864dd  # debian wheezy 64-bit (2014-10-24)
+          ssh_key_name: deployer
+          launch_timeout_s: 120
+          aws:
+            instance_profile_name: webapp
+          config_scopes:
+          - masterdb
+          - webapp
+
+    - playbooks:
+      - common.yml
+      - webapplb.yml
+      - webapp.yml

@@ -2,43 +2,8 @@ Design
 ======
 
 
-Configuration File Rationale
-----------------------------
-The Bang configuration file structure came about with the following
-goals in mind:
+.. toctree::
+    :maxdepth: 2
 
-    - Readability (by humans)
-    - Not another bespoke serialization format
-    - Conciseness
-
-While JSON would allow for there to be one less package dependency,
-YAML was chosen as the overall serialization format because of its
-focus on human readability.
-
-In its earliest forms, Bang had its own SSH logic and used `Chef
-<http://www.opscode.com/chef/>`_ for configuration management.  When
-Ansible was identified as being a suitable replacement for the
-builtin SSH logic and for Chef, it made even more sense to continue
-using YAML for the file format because users could use the same
-format for configuring Bang and for authoring Ansible playbooks.
-
-
-Inventory Persistence
----------------------
-It is often useful to have access to the inventory that was used
-during a particular Bang run.  Bang already provides the inventory
-and the host variables to Ansible directly as Python objects when
-executed as ``bang``, and as a JSON object output to stdout when
-executed as an Ansible inventory plugin (i.e. ``bang --list``).  It
-should also provide the following features:
-
-    - Store inventory and host variables in a user-specified file.
-    - Create ``latest-inventory`` symlink to inventory file after
-      each Bang run.
-    - Allow configuration of inventory output format (i.e. YAML or
-      JSON).  Even though the Ansible inventory plugin API uses JSON
-      as the serialization format, Bang's default inventory output
-      should be YAML for symmetry since Bang's input format is YAML
-      as well.
-    - Allow configuration of above via command-line arguments,
-      ~/.bangrc, or even ansible.cfg.
+    design/config-file
+    design/inventory-persistence
