@@ -197,6 +197,23 @@ class EC2(Consul):
                 )
         if 'disable_api_termination' not in provider_extras:
             provider_extras['disable_api_termination'] = True
+
+        # ec2 api has the following rule:
+        #
+        #     if you specify a subnet_id, you must specify secgroups as
+        #     security_group_ids
+        #
+        # so, we'll assume that if you specify a subnet_id, you don't mean to
+        # have secgroups
+        if 'subnet_id' in provider_extras:
+            secgroups = provider_extras.pop('security_groups', None)
+            if secgroups:
+                log.warn(
+                        "... When using subnet_id you must use"
+                        " security_group_ids.  Ignoring security_groups %s."
+                        % secgroups
+                        )
+
         res = self.ec2.run_instances(
                 disk_image_id,
                 instance_type=instance_type,
