@@ -44,8 +44,11 @@ def get_ansible_groups(group_map):
 
 
 class BangsibleInventory(ansible.inventory.Inventory):
-    def __init__(self, groups, hostvars):
-        super(BangsibleInventory, self).__init__(None)
+    def __init__(self, groups, hostvars, vault_password=None):
+        super(BangsibleInventory, self).__init__(
+                host_list=None,
+                vault_password=vault_password
+                )
         self.groups = get_ansible_groups(groups)
 
         # Prepopulate the cache.  The base Inventory only gathers host vars as

@@ -288,6 +288,7 @@ class Stack(object):
                     verbose=ansible_verbosity
                     )
 
+            vault_password = ansible_cfg.get(A.ansible.VAULT_PASS)
             extra_kwargs = {
                     'playbook': playbook_path,
 
@@ -300,13 +301,14 @@ class Stack(object):
                     # ``host_list`` is used to generate the inventory, but
                     # don't worry, we override the inventory later
                     'host_list': [],
-                    'vault_password': ansible_cfg.get(A.ansible.VAULT_PASS),
+                    'vault_password': vault_password,
                     }
             pb_kwargs.update(extra_kwargs)
             pb = PlayBook(**pb_kwargs)
             inventory = BangsibleInventory(
                     copy.deepcopy(self.groups_and_vars.lists),
                     copy.deepcopy(self.groups_and_vars.dicts),
+                    vault_password=vault_password
                     )
             inventory.set_playbook_basedir(playbook_dir)
             pb.inventory = inventory
