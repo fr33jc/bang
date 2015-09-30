@@ -1,0 +1,24 @@
+# Example of a ~/.bangrc
+# ======================
+
+deployer_credentials:
+  aws:
+    # set aws api credentials for bang to use when creating servers/buckets/etc...
+    access_key_id: AKIAIWANTMYOWNCREDSA
+    secret_access_key: thisisafake+set+of+credentials+use+yours
+
+logging:
+  # set console logging level (uses levels from Python's logging module)
+  console_level: DEBUG
+
+# turn off sfx
+annoy_me: false
+
+ansible:
+  # set the ansible verbosity
+  verbosity: 4
+
+  # set the ansible vault password
+  vault_pass: slbiefjfobksdflwekgj
+
+# vim: set ft=yaml:
